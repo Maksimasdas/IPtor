@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="IPtor.Buisness/IPtor.Buisness.csproj" Id="10db1fec-e133-4a56-978c-d0c79c956bbd" />
+  <Project Path="IPtor.DAL/IPtor.DAL.csproj" Id="224d48c0-603c-46da-bdb3-e4e440d173f0" />
+  <Project Path="IPtor.Domain/IPtor.Domain.csproj" />
+  <Project Path="IPtor/IPtor.csproj" />
+</Solution>

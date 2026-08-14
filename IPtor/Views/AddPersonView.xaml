@@ -1,0 +1,61 @@
+﻿<Window x:Class="IPtor.Views.AddPersonView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Добавить сотрудника" 
+        Height="350" Width="400"
+        WindowStartupLocation="CenterOwner"
+        Background="#2D2D30">
+    <Window.Resources>
+        <!-- Стиль для всех TextBox: выделять текст при фокусе -->
+        <Style TargetType="TextBox">
+            <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="ФИО" Foreground="#CCC" FontWeight="Bold" />
+            <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" 
+                     Margin="0,0,0,10" Background="#3E3E42" Foreground="White" />
+
+            <TextBlock Text="Должность" Foreground="#CCC" FontWeight="Bold" />
+            <TextBox Text="{Binding Position, UpdateSourceTrigger=PropertyChanged}" 
+                     Margin="0,0,0,10" Background="#3E3E42" Foreground="White" />
+
+            <TextBlock Text="Звание" Foreground="#CCC" FontWeight="Bold" />
+            <TextBox Text="{Binding Rank, UpdateSourceTrigger=PropertyChanged}" 
+                     Margin="0,0,0,10" Background="#3E3E42" Foreground="White" />
+
+            <TextBlock Text="Группа" Foreground="#CCC" FontWeight="Bold" />
+            <TextBox Text="{Binding UndPosition, UpdateSourceTrigger=PropertyChanged}" 
+                     Margin="0,0,0,10" Background="#3E3E42" Foreground="White" />
+
+            <TextBlock Text="Служба" Foreground="#CCC" FontWeight="Bold" />
+            <ComboBox ItemsSource="{Binding ServiceTypes}"
+                      SelectedItem="{Binding SelectedService}"
+                      IsEditable="True"
+                      IsTextSearchEnabled="True"
+                      Margin="0,0,0,10" Background="#3E3E42" Foreground="Black">
+                <ComboBox.ItemContainerStyle>
+                    <Style TargetType="ComboBoxItem">
+                        <Setter Property="Foreground" Value="Black" />
+                    </Style>
+                </ComboBox.ItemContainerStyle>
+            </ComboBox>
+        </StackPanel>
+
+        <Button Grid.Row="1"
+                Content="💾 Сохранить"
+                Command="{Binding SaveCommand}"
+                Padding="15,8"
+                HorizontalAlignment="Right"
+                Background="#4CAF50"
+                Foreground="White"
+                BorderThickness="0"
+                Cursor="Hand" />
+    </Grid>
+</Window>

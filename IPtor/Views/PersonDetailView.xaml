@@ -1,0 +1,47 @@
+﻿<Window x:Class="IPtor.Views.PersonDetailView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Сотрудник" Height="400" Width="500"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <!-- Стиль для всех TextBox: выделять текст при фокусе -->
+        <Style TargetType="TextBox">
+            <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="ФИО" FontWeight="Bold" />
+            <TextBox Text="{Binding Person.Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
+
+            <TextBlock Text="Должность" FontWeight="Bold" />
+            <TextBox Text="{Binding Person.Position, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
+
+            <TextBlock Text="Звание" FontWeight="Bold" />
+            <TextBox Text="{Binding Person.Rank, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
+
+            <TextBlock Text="Группа" FontWeight="Bold" />
+            <TextBox Text="{Binding Person.UndPosition, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
+
+            <TextBlock Text="Служба" FontWeight="Bold" />
+            <ComboBox ItemsSource="{Binding ServiceTypes}"
+                      SelectedItem="{Binding Person.Service}"
+                      Margin="0,0,0,10" />
+        </StackPanel>
+
+        <Button Grid.Row="1"
+                Content="💾 Сохранить"
+                Command="{Binding SaveCommand}"
+                Padding="15,8"
+                HorizontalAlignment="Right"
+                Background="#4CAF50"
+                Foreground="White"
+                BorderThickness="0"
+                Cursor="Hand" />
+    </Grid>
+</Window>
