@@ -37,6 +37,11 @@
                         <TextBlock Text="Класс" FontWeight="Bold" />
                         <TextBox Text="{Binding Car.ClassName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
 
+                        <TextBlock Text="Служба" FontWeight="Bold" />
+                        <ComboBox ItemsSource="{Binding ServiceTypes}"
+                                  SelectedItem="{Binding Car.Service}"
+                                  Margin="0,0,0,10" />
+
                         <TextBlock Text="VIN" FontWeight="Bold" />
                         <TextBox Text="{Binding Car.Vin, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
 
@@ -86,7 +91,7 @@
                                         </Grid.ColumnDefinitions>
 
                                         <StackPanel Grid.Column="0" Margin="0,0,5,0">
-                                            <TextBlock Text="Модель" FontSize="10" Foreground="Gray"/>
+                                            <TextBlock Text="Марка" FontSize="10" Foreground="Gray"/>
                                             <TextBox Text="{Binding Specifications, UpdateSourceTrigger=PropertyChanged}"/>
                                         </StackPanel>
 
@@ -205,7 +210,7 @@
 
             <!-- ТО -->
             <TabItem Header="Акты ТО">
-                <ListBox ItemsSource="{Binding DefectsTOs}" Margin="10">
+                <ListBox ItemsSource="{Binding DefectsTO}" Margin="10">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Zakl}" />

@@ -24,7 +24,7 @@ namespace IPtor.Buisness.Services
         public async Task DeleteCarAsync(int id)
         {
             var car = await _uow.Cars.GetByIdAsync(id);
-            if(car != null)
+            if (car != null)
             {
                 _uow.Cars.Delete(car);
                 await _uow.SaveChangesAsync();
@@ -43,7 +43,7 @@ namespace IPtor.Buisness.Services
 
         public async Task<IEnumerable<Car>> GetCarsWithDetailsAsync()
         {
-            return await _uow.Cars.GetCarsWithDetailsAsync();   
+            return await _uow.Cars.GetCarsWithDetailsAsync();
         }
 
         public async Task<Car> GetCarWithFullInfoAsync(int id)
@@ -53,8 +53,31 @@ namespace IPtor.Buisness.Services
 
         public async Task UpdateCarAsync(Car car)
         {
-            _uow.Cars.Update(car);
-            await _uow.SaveChangesAsync();
+            //исправление глюка с невозможностью отредактировать дважды одну и ту же машину
+            var existingCar = await _uow.Cars.GetByIdAsync(car.CarId);
+
+            if (existingCar != null)
+            {
+                existingCar.Name = car.Name;
+                existingCar.Model = car.Model;
+                existingCar.Number = car.Number;
+                existingCar.ClassName = car.ClassName;
+                existingCar.Service = car.Service;
+                existingCar.Vin = car.Vin;
+                existingCar.Certificate = car.Certificate;
+                existingCar.EngineNumber = car.EngineNumber;
+                existingCar.Formular = car.Formular;
+                existingCar.FormularDate = car.FormularDate;
+                existingCar.Year = car.Year;
+                existingCar.InventoryNumber = car.InventoryNumber;
+            
+                await _uow.SaveChangesAsync();
+            }
+
+
+
+            //_uow.Cars.Update(car);
+            //await _uow.SaveChangesAsync();
         }
         public async Task AddBatteryAsync(Battery battery)
         {

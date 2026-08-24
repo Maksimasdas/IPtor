@@ -4,7 +4,12 @@
         Title="Добавить машину" 
         Height="600" Width="800"
         WindowStartupLocation="CenterScreen">
-
+    <Window.Resources>
+        <!-- Стиль для всех TextBox: выделять текст при фокусе -->
+        <Style TargetType="TextBox">
+            <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
+        </Style>
+    </Window.Resources>
     <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />

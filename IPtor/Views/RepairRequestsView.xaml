@@ -6,90 +6,73 @@
             <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
         </Style>
     </UserControl.Resources>
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel>
-            <!-- Верхняя панель -->
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Верхняя панель -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,10">
+            <WrapPanel>
                 <Button Content="🔄" ToolTip="Обновить" Command="{Binding LoadRequestsCommand}"
+                        Width="35" Height="30" Margin="0,0,5,0" />
+                <Button Content="✏️" ToolTip="Редактировать заявку" Command="{Binding EditRequestCommand}"
                         Width="35" Height="30" Margin="0,0,5,0" />
                 <Button Content="🗑" ToolTip="Удалить заявку" Command="{Binding DeleteRequestCommand}"
                         Width="35" Height="30" Margin="0,0,5,0" />
                 <Button Content="🔧" ToolTip="Принять в ремонт" Command="{Binding AcceptForRepairCommand}"
                         Width="35" Height="30" Margin="0,0,5,0" />
-            </StackPanel>
+            </WrapPanel>
 
-            <!-- Список заявок -->
-            <ListBox ItemsSource="{Binding Requests}"
-                     SelectedItem="{Binding SelectedRequest}"
-                     MaxHeight="250"
-                     HorizontalContentAlignment="Stretch">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Border Padding="10" Margin="0,2" Background="#F8F8F8" CornerRadius="4">
+            <!-- Фильтр по машине -->
+            <StackPanel Margin="0,10,0,0">
+                <TextBlock Text="Поиск машины для фильтра:" FontSize="11" Foreground="Gray" />
+                <TextBox Text="{Binding CarSearchText, UpdateSourceTrigger=PropertyChanged}" 
+             Margin="0,0,0,5" />
+
+                <TextBlock Text="Фильтр по машине:" FontSize="11" Foreground="Gray" />
+                <ComboBox ItemsSource="{Binding Cars}"
+              SelectedItem="{Binding SelectedCarFilter}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
                             <StackPanel>
-                                <TextBlock FontWeight="Bold" FontSize="13">
-                                    <Run Text="{Binding Car.Name}" />
-                                    <Run Text=" - " />
-                                    <Run Text="{Binding Car.Number}" />
+                                <TextBlock FontWeight="Bold">
+                        <Run Text="{Binding Name}" />
+                        <Run Text=" - " />
+                        <Run Text="{Binding Number}" />
                                 </TextBlock>
-                                <TextBlock Text="{Binding Description}" Foreground="Gray" FontSize="11" />
-                                <TextBlock Text="{Binding RequestDate, StringFormat='{}{0:dd.MM.yyyy HH:mm}'}" 
-                                           FontSize="10" Foreground="#666" />
+                                <TextBlock Text="{Binding Model}" FontSize="10" Foreground="Gray"/>
                             </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-
-            <!-- Форма добавления -->
-            <Border Background="#F0F4F8" Padding="15" Margin="0,10,0,0" CornerRadius="4">
-                <StackPanel>
-                    <TextBlock Text="Новая заявка" FontWeight="Bold" FontSize="15" Margin="0,0,0,10" />
-
-                    <StackPanel Margin="0,0,0,10">
-                        <TextBlock Text="Машина" FontSize="11" Foreground="Gray" />
-                        <StackPanel Margin="0,0,0,10">
-                            <TextBlock Text="Поиск машины" FontSize="11" Foreground="Gray" />
-                            <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
-                                    Margin="0,0,0,5" />
-
-                            <TextBlock Text="Машина" FontSize="11" Foreground="Gray" />
-                            <ComboBox ItemsSource="{Binding Cars}"
-                                    SelectedItem="{Binding SelectedCar}">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel>
-                                            <TextBlock FontWeight="Bold">
-                                                <Run Text="{Binding Name}" />
-                                                <Run Text=" - " />
-                                                <Run Text="{Binding Number}" />
-                                            </TextBlock>
-                                            <TextBlock Text="{Binding Model}" FontSize="10" Foreground="Gray"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
-                        </StackPanel>
-                    </StackPanel>
-
-                    <StackPanel Margin="0,0,0,10">
-                        <TextBlock Text="Описание неисправности" FontSize="11" Foreground="Gray" />
-                        <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" 
-                                 Height="60"
-                                 TextWrapping="Wrap"
-                                 AcceptsReturn="True" />
-                    </StackPanel>
-
-                    <Button Content="➕ Добавить заявку"
-                            Command="{Binding AddRequestCommand}"
-                            Padding="15,8"
-                            HorizontalAlignment="Left"
-                            Background="#4CAF50"
-                            Foreground="White"
-                            BorderThickness="0"
-                            Cursor="Hand" />
-                </StackPanel>
-            </Border>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
         </StackPanel>
-    </ScrollViewer>
+
+        <!-- Список заявок -->
+        <ListBox Grid.Row="1"
+                 ItemsSource="{Binding Requests}"
+                 SelectedItem="{Binding SelectedRequest}"
+                 MouseDoubleClick="ListBox_MouseDoubleClick"
+                 HorizontalContentAlignment="Stretch">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Padding="10" Margin="0,2" Background="#F8F8F8" CornerRadius="4">
+                        <StackPanel>
+                            <TextBlock FontWeight="Bold" FontSize="13">
+                                <Run Text="{Binding Car.Name}" />
+                                <Run Text=" - " />
+                                <Run Text="{Binding Car.Number}" />
+                            </TextBlock>
+                            <TextBlock Text="{Binding Description}" Foreground="Gray" FontSize="11" TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding RequestDate, StringFormat='{}{0:dd.MM.yyyy HH:mm}'}" 
+                                       FontSize="10" Foreground="#666" />
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
 </UserControl>

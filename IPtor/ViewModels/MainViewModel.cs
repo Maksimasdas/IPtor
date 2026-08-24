@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.InkML;
+using DocumentFormat.OpenXml.Presentation;
 using IPtor.Commands;
 using System;
 using System.Collections.Generic;
@@ -26,10 +27,11 @@ namespace IPtor.ViewModels
         public ICommand ShowPersonsCommand { get; }
         public ICommand ShowReportsCommand { get; }
         public ICommand ShowRepairRequestsCommand { get; }
+        public ICommand ShowStatisticsCommand { get; }
 
         // ===== КОНСТРУКТОР =====
         // Все дочерние ViewModel внедряются через DI
-        public MainViewModel(CarsViewModel carsViewModel, PersonsViewModel personsViewModel, RepairRequestsViewModel repairRequestsViewModel)
+        public MainViewModel(CarsViewModel carsViewModel, PersonsViewModel personsViewModel, RepairRequestsViewModel repairRequestsViewModel, StatisticsViewModel statisticsViewModel)
         {
             // При старте показываем список машин
             CurrentView = carsViewModel;
@@ -42,12 +44,15 @@ namespace IPtor.ViewModels
                 personsViewModel.LoadPersonsCommand.Execute(null);
             });
 
-            // Команда: переключиться на отчёты (пока заглушка, ReportsViewModel сделаем позже)
+            // Команда: переключиться на отчёты (пока заглушка)
             ShowRepairRequestsCommand = new RelayCommand(_ =>
             {
                 CurrentView = repairRequestsViewModel;
                 repairRequestsViewModel.LoadRequestsCommand.Execute(null);  // ← загрузка здесь
             });
+
+            //команда для статистики
+            ShowStatisticsCommand = new RelayCommand(_ => CurrentView = statisticsViewModel);
         }
     }
 }

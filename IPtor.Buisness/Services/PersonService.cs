@@ -1,9 +1,11 @@
 ﻿using IPtor.Buisness.Interfaces;
 using IPtor.DAL.Interfaces;
 using IPtor.Domain.Entities;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml.Xsl;
 
 namespace IPtor.Buisness.Services
 {
@@ -42,8 +44,21 @@ namespace IPtor.Buisness.Services
 
         public async Task UpdatePersonAsync(Person person)
         {
-            _uow.Persons.Update(person);
-            await _uow.SaveChangesAsync();
+            //исправление глюка с невозможностью отредактировать дважды одного и того же человека
+            var existingPerson = await _uow.Persons.GetByIdAsync(person.PersonId);
+
+            if(existingPerson != null)
+            {
+                existingPerson.Name = person.Name;
+                existingPerson.Position = person.Position;
+                existingPerson.Rank = person.Rank;
+                existingPerson.UndPosition = person.UndPosition;
+                existingPerson.Service = person.Service;
+
+                await _uow.SaveChangesAsync();
+            }
+            //_uow.Persons.Update(person);
+            //await _uow.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<Person>> GetAllPersonsAsync()

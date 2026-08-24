@@ -9,5 +9,6 @@ namespace IPtor.Buisness.Interfaces
         Task<IEnumerable<RepairRequest>> GetAllRequestsAsync();
         Task AddRequestAsync(RepairRequest request);
         Task DeleteRequestAsync(int id);
+        Task UpdateRequestAsync(RepairRequest request);
     }
 }

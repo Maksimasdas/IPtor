@@ -35,5 +35,16 @@ namespace IPtor.Buisness.Services
                 await _uow.SaveChangesAsync();
             }
         }
+
+        public async Task UpdateRequestAsync(RepairRequest request)
+        {
+            var existing = await _uow.RepairRequests.GetByIdAsync(request.RepairRequestId);
+            if (existing != null)
+            {
+                existing.Description = request.Description;
+                existing.Status = request.Status;
+                await _uow.SaveChangesAsync();
+            }
+        }
     }
 }

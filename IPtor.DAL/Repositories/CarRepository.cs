@@ -8,7 +8,7 @@ namespace IPtor.DAL.Repositories
     public class CarRepository : EntityRepository<Car>, ICarRepository
     {
         public CarRepository(AppDbContext context) : base(context)
-        { //остановился на добавлении людей, перемотать вверх в чате, там подсказки
+        {
         }
 
         public async Task<IEnumerable<Car>> GetCarsByServiceAsync(ServiceType service)

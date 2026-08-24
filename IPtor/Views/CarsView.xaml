@@ -47,11 +47,17 @@
         </StackPanel>
 
         <!-- Список машин -->
-        <ListBox Grid.Row="1"
+        <ListBox Grid.Row="1" x:Name="CarsListBox"
                  ItemsSource="{Binding Cars}"
                  SelectedItem="{Binding SelectedCar}"
                  MouseDoubleClick="ListBox_MouseDoubleClick"
                  HorizontalContentAlignment="Stretch">
+            <ListBox.ContextMenu>
+                <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                    <MenuItem Header="Создать заявку на ремонт" 
+                      Command="{Binding CreateRepairRequestCommand}" />
+                </ContextMenu>
+            </ListBox.ContextMenu>
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border Padding="10" Margin="0,2" Background="#F8F8F8" CornerRadius="4">
@@ -62,6 +68,7 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0">
+                                
                                 <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="14" />
                                 <TextBlock Text="{Binding Number}" Foreground="Gray" />
                                 <TextBlock>

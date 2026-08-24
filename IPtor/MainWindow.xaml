@@ -20,6 +20,9 @@
         <DataTemplate DataType="{x:Type vm:RepairRequestsViewModel}">
             <views:RepairRequestsView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:StatisticsViewModel}">
+            <views:StatisticsView />
+        </DataTemplate>
 
         <!-- Место для ReportsViewModel — добавим позже -->
         <!-- <DataTemplate DataType="{x:Type vm:ReportsViewModel}">
@@ -76,6 +79,16 @@
                     BorderThickness="0"
                     Cursor="Hand" />
 
+            <!-- кнопка статистики -->
+            <Button Content="📊 Статистика"
+                Command="{Binding ShowStatisticsCommand}"
+                Margin="10,5"
+                Padding="10,8"
+                Background="#3E3E42"
+                Foreground="White"
+                BorderThickness="0"
+                Cursor="Hand" />
+            
         </StackPanel>
 
         <!-- Правая часть — контент (меняется через привязку) -->

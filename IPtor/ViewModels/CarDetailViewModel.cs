@@ -17,6 +17,8 @@ namespace IPtor.ViewModels
         private readonly ICarService _carService;
         private readonly int _carId;
 
+        public Action CloseAction { get; set; } //для закрытия окна после добавлнеия машины
+
         private Car _car;
         public Car Car
         {
@@ -28,6 +30,7 @@ namespace IPtor.ViewModels
         public ObservableCollection<Tire> Tires { get; set; }
         public ObservableCollection<Defects> Defects { get; set; }
         public ObservableCollection<DefectsTO> DefectsTO { get; set; }
+        public ObservableCollection<string> ServiceTypes { get; } //добавлено потому что было сразу пропущено
 
         //команда сохранения изменений
         public ICommand SaveCommand { get; }
@@ -60,6 +63,13 @@ namespace IPtor.ViewModels
             _carService = carService;
             _carId = carId;
 
+            //помоему не хватает заполнения комбобокса служб
+            ServiceTypes = new ObservableCollection<string>();
+            foreach (var service in System.Enum.GetValues(typeof(ServiceType)).Cast<ServiceType>())
+            {
+                ServiceTypes.Add(service.ToString());
+            }
+
             Batteries = new ObservableCollection<Battery>();
             Tires = new ObservableCollection<Tire>();
             Defects = new ObservableCollection<Defects>();
@@ -90,8 +100,8 @@ namespace IPtor.ViewModels
 
             foreach (var b in car.Batteries) Batteries.Add(b);
             foreach (var t in car.Tires) Tires.Add(t);
-            foreach (var d in car.Defects) Defects.Add(d);
-            foreach (var dt in car.DefectsTO) DefectsTO.Add(dt);
+            foreach (var d in car.Defects) Defects.Add(d); //вроде как не нужно сейчас
+            foreach (var dt in car.DefectsTO) DefectsTO.Add(dt); //вроде как не нужно сейчас
         }
 
         private async Task SaveAsync()
@@ -117,6 +127,10 @@ namespace IPtor.ViewModels
             System.Windows.MessageBox.Show("Изменения сохранены!", "Успех",
                 System.Windows.MessageBoxButton.OK,
                 System.Windows.MessageBoxImage.Information);
+
+
+
+            CloseAction?.Invoke();  // ← Закрыть окно
         }
         private void AddBattery()
         {

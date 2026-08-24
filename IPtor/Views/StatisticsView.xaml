@@ -1,0 +1,26 @@
+﻿<UserControl x:Class="IPtor.Views.StatisticsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+             Loaded="UserControl_Loaded">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="10">
+            <TextBlock Text="Статистика" FontSize="20" FontWeight="Bold" Margin="0,0,0,15" />
+
+            <!-- Pie Chart: машины по службам -->
+            <GroupBox Header="Машины по службам" Padding="10" Margin="0,0,0,15">
+                <lvc:PieChart Series="{Binding ServiceSeries}"
+                              Height="300" />
+            </GroupBox>
+
+            <!-- Column Chart: машины по годам -->
+            <GroupBox Header="Машины по годам" Padding="10">
+                <lvc:CartesianChart Series="{Binding YearSeries}"
+                                    XAxes="{Binding XAxes}"
+                                    YAxes="{Binding YAxes}"
+                                    Height="300" />
+            </GroupBox>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

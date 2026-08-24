@@ -17,7 +17,7 @@ namespace IPtor.ViewModels
         private readonly IPersonService _personService;
         private readonly IReportService _reportService;
 
-        private List<Car> _allCars;
+        private List<RepairRequest> _allRequests;
 
         private ObservableCollection<RepairRequest> _requests;
         public ObservableCollection<RepairRequest> Requests
@@ -40,89 +40,76 @@ namespace IPtor.ViewModels
             set => Set(ref _cars, value);
         }
 
-        private Car _selectedCar;
-        public Car SelectedCar
+        private Car _selectedCarFilter;
+        public Car SelectedCarFilter
         {
-            get => _selectedCar;
-            set => Set(ref _selectedCar, value);
-        }
-
-        private string _description;
-        public string Description
-        {
-            get => _description;
-            set => Set(ref _description, value);
-        }
-
-        private string _searchText;
-        public string SearchText
-        {
-            get => _searchText;
+            get => _selectedCarFilter;
             set
             {
-                if (Set(ref _searchText, value))
+                if (Set(ref _selectedCarFilter, value))
                 {
-                    FilterCars();
+                    FilterRequests();
                 }
             }
         }
 
+        private string _carSearchText;
+        public string CarSearchText
+        {
+            get => _carSearchText;
+            set
+            {
+                if (Set(ref _carSearchText, value))
+                {
+                    FilterCarsForCombo();
+                }
+            }
+        }
+        private List<Car> _allCarsList;
+
         public ICommand LoadRequestsCommand { get; }
-        public ICommand AddRequestCommand { get; }
         public ICommand DeleteRequestCommand { get; }
         public ICommand AcceptForRepairCommand { get; }
+        public ICommand EditRequestCommand { get; }
 
         public RepairRequestsViewModel(
-    IRepairRequestService requestService,
-    ICarService carService,
-    IPersonService personService,
-    IReportService reportService)
+            IRepairRequestService requestService,
+            ICarService carService,
+            IPersonService personService,
+            IReportService reportService)
         {
             _requestService = requestService;
             _carService = carService;
             _personService = personService;
             _reportService = reportService;
 
-            // Команда обновления загружает всё последовательно
-            LoadRequestsCommand = new RelayCommand(async _ => await LoadDataAsync());
-
-            AddRequestCommand = new RelayCommand(async _ => await AddRequestAsync(),
-                _ => SelectedCar != null && !string.IsNullOrWhiteSpace(Description));
+            LoadRequestsCommand = new RelayCommand(async _ =>
+            {
+                await LoadDataAsync();        // Сначала загружаем машины и заявки
+                CarSearchText = string.Empty;  // Потом сбрасываем поиск
+                SelectedCarFilter = null;      // И фильтр
+            });
             DeleteRequestCommand = new RelayCommand(async _ => await DeleteRequestAsync(),
                 _ => SelectedRequest != null);
             AcceptForRepairCommand = new RelayCommand(_ => AcceptForRepair(),
                 _ => SelectedRequest != null);
-
-            // БЕЗ автозагрузки
+            EditRequestCommand = new RelayCommand(_ => EditRequest(),
+                _ => SelectedRequest != null);
         }
-
 
         private async Task LoadDataAsync()
         {
-            try
-            {
-                await LoadCarsAsync();
-            }
-            catch (Exception ex)
-            {
-                System.Windows.MessageBox.Show($"Ошибка машин: {ex.Message}");
-            }
-
-            try
-            {
-                await LoadRequestsAsync();
-            }
-            catch (Exception ex)
-            {
-                System.Windows.MessageBox.Show($"Ошибка заявок: {ex.Message}");
-            }
+            await LoadCarsAsync();
+            await LoadRequestsAsync();
         }
 
         private async Task LoadCarsAsync()
         {
             var cars = await _carService.GetAllCarsAsync();
-            _allCars = cars.ToList();
-            Cars = new ObservableCollection<Car>(_allCars);
+            _allCarsList = cars.ToList();
+            Cars = new ObservableCollection<Car>(_allCarsList);
+            //Cars = new ObservableCollection<Car>(cars);
+            //Cars = new ObservableCollection<Car>(_allCarsList);
         }
 
         private async Task LoadRequestsAsync()
@@ -134,23 +121,23 @@ namespace IPtor.ViewModels
                 request.Car = Cars.FirstOrDefault(c => c.CarId == request.CarId);
             }
 
-            Requests = new ObservableCollection<RepairRequest>(requests);
+            _allRequests = requests;
+            FilterRequests();
         }
 
-        private async Task AddRequestAsync()
+        private void FilterRequests()
         {
-            var request = new RepairRequest
+            if (SelectedCarFilter == null)
             {
-                CarId = SelectedCar.CarId,
-                Description = Description,
-                RequestDate = DateTime.Now,
-                Status = "Ожидает ремонта"
-            };
-
-            await _requestService.AddRequestAsync(request);
-
-            Description = string.Empty;
-            await LoadRequestsAsync();
+                Requests = new ObservableCollection<RepairRequest>(_allRequests);
+            }
+            else
+            {
+                var filtered = _allRequests
+                    .Where(r => r.CarId == SelectedCarFilter.CarId)
+                    .ToList();
+                Requests = new ObservableCollection<RepairRequest>(filtered);
+            }
         }
 
         private async Task DeleteRequestAsync()
@@ -158,7 +145,8 @@ namespace IPtor.ViewModels
             if (SelectedRequest == null) return;
 
             await _requestService.DeleteRequestAsync(SelectedRequest.RepairRequestId);
-            Requests.Remove(SelectedRequest);
+            _allRequests.Remove(SelectedRequest);
+            FilterRequests();
         }
 
         private void AcceptForRepair()
@@ -174,18 +162,32 @@ namespace IPtor.ViewModels
 
             _ = DeleteRequestAsync();
         }
-        private void FilterCars()
+
+        private async void EditRequest()
         {
-            if (string.IsNullOrWhiteSpace(SearchText))
+            if (SelectedRequest == null) return;
+
+            var editVM = new EditRepairRequestViewModel(_requestService, SelectedRequest);
+            var window = new EditRepairRequestView(editVM);
+            window.ShowDialog();
+
+            await LoadRequestsAsync();
+        }
+
+        private void FilterCarsForCombo()
+        {
+            if (_allCarsList == null) return;
+
+            if (string.IsNullOrWhiteSpace(CarSearchText))
             {
-                Cars = new ObservableCollection<Car>(_allCars);
+                Cars = new ObservableCollection<Car>(_allCarsList);
                 return;
             }
 
-            var filtered = _allCars.Where(car =>
-                car.Number.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                car.Model.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                car.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+            var filtered = _allCarsList.Where(car =>
+                car.Number.Contains(CarSearchText, StringComparison.OrdinalIgnoreCase) ||
+                car.Name.Contains(CarSearchText, StringComparison.OrdinalIgnoreCase) ||
+                car.Model.Contains(CarSearchText, StringComparison.OrdinalIgnoreCase)
             ).ToList();
 
             Cars = new ObservableCollection<Car>(filtered);

@@ -1,4 +1,5 @@
-﻿using IPtor.Buisness.Interfaces;
+﻿using Azure.Core.Pipeline;
+using IPtor.Buisness.Interfaces;
 using IPtor.Commands;
 using IPtor.Domain.Entities;
 using IPtor.Domain.Enums;
@@ -6,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Windows;
 using System.Windows.Input;
 
 namespace IPtor.ViewModels
@@ -187,7 +189,13 @@ namespace IPtor.ViewModels
 
         private async Task SaveAsync()
         {
-            var service = (ServiceType)System.Enum.Parse(typeof(ServiceType), SelectedService);
+            if (SelectedService == null)
+            {
+                MessageBox.Show("Необходимо указать службу");
+                return;
+            }
+
+            var service = (ServiceType)System.Enum.Parse(typeof(ServiceType), SelectedService); //надо придумать значение по умолчанию
 
             var car = new Car
             {

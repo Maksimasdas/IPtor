@@ -46,15 +46,13 @@ namespace IPtor
             // ===== VIEWMODELS =====
             services.AddTransient<MainViewModel>();
             services.AddTransient<CarsViewModel>();
-
+            //=== вкладка сотрудников
+            services.AddTransient<PersonsViewModel>();
             // ===== ГЛАВНОЕ ОКНО =====
             services.AddTransient<MainWindow>();
 
             // ===== ОКНО ДОБАВЛЕНИЯ МАШИНЫ =====
             services.AddTransient<AddCarViewModel>();
-
-            //=== вкладка сотрудников
-            services.AddTransient<PersonsViewModel>();
 
             //регистрация что бы делать акты приемки
             services.AddTransient<TransferActViewModel>();
@@ -65,6 +63,9 @@ namespace IPtor
             //предварительная запись на ТО
             services.AddScoped<IRepairRequestService, RepairRequestService>();
             services.AddTransient<RepairRequestsViewModel>();
+
+            //диаграммы регистрация
+            services.AddTransient<StatisticsViewModel>();
 
             _serviceProvider = services.BuildServiceProvider();
         }

@@ -24,5 +24,17 @@ namespace IPtor.Views
             DataContext = viewModel;
             viewModel.CloseAction = Close;  // ← Привязываем закрытие окна
         }
+
+        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is TextBox textBox && !textBox.IsReadOnly)
+            {
+                // Небольшая задержка, чтобы выделение сработало корректно
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    textBox.SelectAll();
+                }), System.Windows.Threading.DispatcherPriority.Input);
+            }
+        }
     }
 }

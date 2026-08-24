@@ -22,6 +22,7 @@ namespace IPtor.Views
         {
             InitializeComponent();
             DataContext = viewModel;
+            viewModel.CloseAction = Close;  // ← Привязываем закрытие окна почему-то тут не работает
         }
     }
 }

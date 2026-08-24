@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IPtor.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -31,6 +32,13 @@ namespace IPtor.Views
                 {
                     textBox.SelectAll();
                 }), System.Windows.Threading.DispatcherPriority.Input);
+            }
+        }
+        private void ListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (DataContext is RepairRequestsViewModel vm && vm.SelectedRequest != null)
+            {
+                vm.EditRequestCommand.Execute(null);
             }
         }
     }

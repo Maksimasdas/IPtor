@@ -1,4 +1,5 @@
 ﻿using IPtor.Buisness.Interfaces;
+using IPtor.Buisness.Services;
 using IPtor.Commands;
 using IPtor.Domain.Entities;
 using IPtor.Domain.Enums;
@@ -15,6 +16,7 @@ namespace IPtor.ViewModels
         private readonly ICarService _carService;
         private readonly IPersonService _personService;
         private readonly IReportService _reportService;
+        private readonly IRepairRequestService _repairRequestService;
 
         // ===== КОЛЛЕКЦИЯ МАШИН =====
         private ObservableCollection<Car> _cars;
@@ -59,17 +61,19 @@ namespace IPtor.ViewModels
         public ICommand OpenCarDetailCommand { get; }
         public ICommand CreateTransferActCommand { get; }
         public ICommand CreateTOActCommand { get; }
+        public ICommand CreateRepairRequestCommand { get; }
 
         // ===== СПИСОК СЛУЖБ ДЛЯ ФИЛЬТРА =====
         public ObservableCollection<string> ServiceTypes { get; }
 
         // ===== КОНСТРУКТОР =====
         // ICarService внедряется через DI
-        public CarsViewModel(ICarService carService, IPersonService personService, IReportService reportService)
+        public CarsViewModel(ICarService carService, IPersonService personService, IReportService reportService, IRepairRequestService repairRequestService)
         {
             _carService = carService;
             _personService = personService;
             _reportService = reportService;
+            _repairRequestService = repairRequestService;
 
             ServiceTypes = new ObservableCollection<string> { "Все службы" };
             foreach (var service in System.Enum.GetValues(typeof(ServiceType)).Cast<ServiceType>())
@@ -84,6 +88,7 @@ namespace IPtor.ViewModels
             OpenCarDetailCommand = new RelayCommand(_ => OpenCarDetail(), _ => SelectedCar != null);
             CreateTransferActCommand = new RelayCommand(_ => OpenTransferActWindow(), _ => SelectedCar != null);
             CreateTOActCommand = new RelayCommand(_ => OpenTOActWindow(), _ => SelectedCar != null);
+            CreateRepairRequestCommand = new RelayCommand(_ => OpenRepairRequestWindow(), _ => SelectedCar != null);
 
             // При старте сразу загружаем машины
             _ = LoadCarsAsync();
@@ -139,6 +144,8 @@ namespace IPtor.ViewModels
             var detailVM = new CarDetailViewModel(_carService, SelectedCar.CarId);
             var window = new CarDetailView(detailVM);
             window.ShowDialog();
+
+            _ = LoadCarsAsync();//добавил для обновления машин после редактирования
         }
         //создать акт передачи (открывается окно создания акта)
         private void OpenTransferActWindow()
@@ -157,6 +164,17 @@ namespace IPtor.ViewModels
 
             var actVM = new TOActViewModel(_personService, _reportService, SelectedCar);
             var window = new TOActView(actVM);
+            window.ShowDialog();
+        }
+
+        //Открытие окна добавления заявок на ремонт
+        private void OpenRepairRequestWindow()
+        {
+            //System.Windows.MessageBox.Show("Команда вызвана!");//для проверки и выявления глюка
+            if (SelectedCar == null) return;
+
+            var requestVM = new AddRepairRequestViewModel(_repairRequestService, SelectedCar);
+            var window = new AddRepairRequestView(requestVM);
             window.ShowDialog();
         }
     }
