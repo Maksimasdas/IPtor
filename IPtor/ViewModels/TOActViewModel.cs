@@ -1,5 +1,6 @@
 ﻿using IPtor.Buisness.Interfaces;
 using IPtor.Buisness.Models;
+using IPtor.Buisness.Services;
 using IPtor.Commands;
 using IPtor.Domain.Entities;
 using IPtor.Views;
@@ -16,6 +17,7 @@ namespace IPtor.ViewModels
     {
         private readonly IPersonService _personService;
         private readonly IReportService _reportService;
+        private readonly ICarService _carService;
         private readonly Car _car;
 
         public string CarInfo { get; }
@@ -187,10 +189,11 @@ namespace IPtor.ViewModels
         public ICommand GenerateCommand { get; }
         public ICommand AddPersonCommand { get; }
 
-        public TOActViewModel(IPersonService personService, IReportService reportService, Car car)
+        public TOActViewModel(IPersonService personService, IReportService reportService, ICarService carService, Car car)
         {
             _personService = personService;
             _reportService = reportService;
+            _carService = carService;
             _car = car;
 
             CarInfo = $"{car.Name} {car.Model} | Гос.номер: {car.Number} | VIN: {car.Vin}";
@@ -215,7 +218,7 @@ namespace IPtor.ViewModels
             _ = LoadPersonsAsync();
         }
 
-        private void GenerateAct()
+        private async Task GenerateAct()
         {
             if (SheffPassService == null || ResponcePerson == null || Driver == null)
             {
@@ -313,6 +316,54 @@ namespace IPtor.ViewModels
                     MessageBox.Show($"Файл сохранен, но не удалось открыть автоматически: {ex.Message}",
                         "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
+                //для сохранения истории акта
+
+                var defectsTO = new DefectsTO
+                {
+                    CarId = _car.CarId,
+                    Body = Body,
+                    HeadBody = HeadBody,
+                    Engine = Engine,
+                    KPP = KPP,
+                    Rul = Rul,
+                    FrontGear = FrontGear,
+                    BackGear = BackGear,
+                    Electro = Electro,
+                    PTV = PTV,
+                    Water = Water,
+                    GeneralView = GeneralView,
+                    Spec = Spec,
+                    Break = Break,
+                    Other = Other,
+                    PuskRuk = PuskRuk,
+                    Domkrat = Domkrat,
+                    Nasos = Nasos,
+                    SHpric = SHpric,
+                    Molotok = Molotok,
+                    Ploskogubci = Ploskogubci,
+                    Kluchi = Kluchi,
+                    Cluchi2 = Cluchi2,
+                    Cluchi3 = Cluchi3,
+                    Cluchi4 = Cluchi4,
+                    Chehli = Chehli,
+                    Aptechka = Aptechka,
+                    Znak = Znak,
+                    Disk = Disk,
+                    Ognetush = Ognetush,
+                    Radio = Radio,
+                    Protivougon = Protivougon,
+                    Gromkogov = Gromkogov,
+                    Protivotuman = Protivotuman,
+                    Mayak = Mayak,
+                    Fara = Fara,
+                    Prochee = Prochee,
+                    Fuel = fuel,
+                    Zakl = Zakl,
+                    Pred = Pred
+                };
+
+                await _carService.AddDefectsTOAsync(defectsTO);
+
 
                 CloseAction?.Invoke();
             }

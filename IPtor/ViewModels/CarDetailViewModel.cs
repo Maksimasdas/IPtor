@@ -43,6 +43,9 @@ namespace IPtor.ViewModels
         public ICommand AddTireCommand { get; }
         public ICommand DeleteTireCommand { get; }
 
+        //кодманда для обновления списка истории актов
+        public ICommand RefreshCommand { get; }
+
         // Выбранные элементы
         private Battery _selectedBattery;
         public Battery SelectedBattery
@@ -82,6 +85,7 @@ namespace IPtor.ViewModels
 
             AddTireCommand = new RelayCommand(_ => AddTire());
             DeleteTireCommand = new RelayCommand(_ => DeleteTire(), _ => SelectedTire != null);
+            RefreshCommand = new RelayCommand(async _ => await LoadCarAsync());
 
             _ = LoadCarAsync();
         }
@@ -100,8 +104,8 @@ namespace IPtor.ViewModels
 
             foreach (var b in car.Batteries) Batteries.Add(b);
             foreach (var t in car.Tires) Tires.Add(t);
-            foreach (var d in car.Defects) Defects.Add(d); //вроде как не нужно сейчас
-            foreach (var dt in car.DefectsTO) DefectsTO.Add(dt); //вроде как не нужно сейчас
+            foreach (var d in car.Defects) Defects.Add(d);
+            foreach (var dt in car.DefectsTO) DefectsTO.Add(dt);
         }
 
         private async Task SaveAsync()

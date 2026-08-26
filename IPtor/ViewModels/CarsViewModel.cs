@@ -162,7 +162,7 @@ namespace IPtor.ViewModels
         {
             if (SelectedCar == null) return;
 
-            var actVM = new TOActViewModel(_personService, _reportService, SelectedCar);
+            var actVM = new TOActViewModel(_personService, _reportService, _carService, SelectedCar);
             var window = new TOActView(actVM);
             window.ShowDialog();
         }

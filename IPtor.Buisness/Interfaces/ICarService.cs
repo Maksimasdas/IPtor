@@ -19,5 +19,7 @@ namespace IPtor.Buisness.Interfaces
         Task AddTireAsync(Tire tire);                                      //доабвить шину
         Task DeleteBatteryAsync(int id);                                   //удалить акб
         Task DeleteTireAsync(int id);                                      //удалить шину
+        Task AddDefectsAsync(Defects defects);                             //сохранить историю акта приемки
+        Task AddDefectsTOAsync(DefectsTO defectsTO);                       //сохранить историю акта ТО
     }
 }

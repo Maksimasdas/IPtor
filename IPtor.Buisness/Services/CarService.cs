@@ -110,5 +110,16 @@ namespace IPtor.Buisness.Services
                 await _uow.SaveChangesAsync();
             }
         }
+        //добавлено для созранения истории актов 2 метода
+        public async Task AddDefectsAsync(Defects defects)
+        {
+            await _uow.Defects.AddAsync(defects);
+            await _uow.SaveChangesAsync();
+        }
+        public async Task AddDefectsTOAsync(DefectsTO defectsTO)
+        {
+            await _uow.DefectsTOs.AddAsync(defectsTO);
+            await _uow.SaveChangesAsync();
+        }
     }
 }

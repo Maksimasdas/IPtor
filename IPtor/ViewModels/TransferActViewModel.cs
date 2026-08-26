@@ -265,7 +265,7 @@ namespace IPtor.ViewModels
             _ = LoadPersonsAsync();
         }
 
-        private void GenerateAct()
+        private async Task GenerateAct()
         {
             // Валидация
             if (SheffPassService == null || ResponcePerson == null || Driver == null ||
@@ -360,6 +360,27 @@ namespace IPtor.ViewModels
                     MessageBox.Show($"Файл сохранен, но не удалось открыть автоматически: {ex.Message}",
                         "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
+                //сохранение истории акта
+                var defects = new Defects
+                {
+                    CarId = _car.CarId,
+                    Staff = Staff,
+                    EngineDefect = EngineDefect,
+                    Electro = Electro,
+                    Clutch = Clutch,
+                    Kpp = Kpp,
+                    Steering = Steering,
+                    FrontGear = FrontGear,
+                    BackGear = BackGear,
+                    Frame = Frame,
+                    Body = Body,
+                    SpecEq = SpecEq,
+                    ExternalCond = ExternalCond,
+                    NumberWheel = NumberWheel,
+                    FuelAvail = fuel,
+                    Conclusion = Conclusion
+                };
+                await _carService.AddDefectsAsync(defects);
 
                 CloseAction?.Invoke();
             }

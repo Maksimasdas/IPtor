@@ -22,6 +22,8 @@ namespace IPtor.Domain.Entities
         public string? Spec { get; set; }
         public string? Break { get; set; }
         public string? Other { get; set; }
+        //дополнительно создано для истории актов
+        public DateTime ActDate { get; set; } = DateTime.Now;
 
         //укомплектовааность
 

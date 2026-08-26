@@ -11,6 +11,7 @@
             <!-- Pie Chart: машины по службам -->
             <GroupBox Header="Машины по службам" Padding="10" Margin="0,0,0,15">
                 <lvc:PieChart Series="{Binding ServiceSeries}"
+                              LegendPosition="Right"
                               Height="300" />
             </GroupBox>
 
@@ -19,6 +20,7 @@
                 <lvc:CartesianChart Series="{Binding YearSeries}"
                                     XAxes="{Binding XAxes}"
                                     YAxes="{Binding YAxes}"
+                                    LegendPosition="Bottom"
                                     Height="300" />
             </GroupBox>
         </StackPanel>

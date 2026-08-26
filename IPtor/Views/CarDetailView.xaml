@@ -196,27 +196,61 @@
             
             <!-- Дефекты -->
             <TabItem Header="Акты дефектовки">
-                <ListBox ItemsSource="{Binding Defects}" Margin="10">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel>
-                                <TextBlock Text="{Binding Staff}" FontWeight="Bold"/>
-                                <TextBlock Text="{Binding EngineDefect}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Button Grid.Row="0" Content="🔄 Обновить" Command="{Binding RefreshCommand}" 
+                HorizontalAlignment="Left" Padding="5" Margin="0,0,0,5" />
+
+                    <ListBox Grid.Row="1" ItemsSource="{Binding Defects}"
+                 HorizontalContentAlignment="Stretch">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border Padding="10" Margin="0,0,0,5" Background="#F8F8F8" CornerRadius="4">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding ActDate, StringFormat='{}{0:dd.MM.yyyy}'}" 
+                                       FontSize="10" Foreground="#999" />
+                                        <TextBlock Text="{Binding Conclusion}" FontWeight="Bold" FontSize="13" Margin="0,3,0,0" />
+                                        <TextBlock Text="{Binding Staff}" Foreground="#666" FontSize="11" Margin="0,3,0,0" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
             </TabItem>
 
             <!-- ТО -->
             <TabItem Header="Акты ТО">
-                <ListBox ItemsSource="{Binding DefectsTO}" Margin="10">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Zakl}" />
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Button Grid.Row="0" Content="🔄 Обновить" Command="{Binding RefreshCommand}" 
+                HorizontalAlignment="Left" Padding="5" Margin="0,0,0,5" />
+
+                    <ListBox Grid.Row="1" ItemsSource="{Binding DefectsTO}"
+                 HorizontalContentAlignment="Stretch">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border Padding="10" Margin="0,0,0,5" Background="#F8F8F8" CornerRadius="4">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding ActDate, StringFormat='{}{0:dd.MM.yyyy}'}" 
+                                       FontSize="10" Foreground="#999" />
+                                        <TextBlock Text="{Binding Zakl}" FontWeight="Bold" FontSize="13" Margin="0,3,0,0" />
+                                        <TextBlock Text="{Binding Pred}" Foreground="#666" FontSize="11" Margin="0,3,0,0" />
+                                        <TextBlock Text="{Binding GeneralView}" FontSize="11" Foreground="#999" Margin="0,3,0,0" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
             </TabItem>
         </TabControl>
 

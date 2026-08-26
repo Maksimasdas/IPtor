@@ -3,6 +3,8 @@ using IPtor.Commands;
 using IPtor.Domain.Enums;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
+using SkiaSharp;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -14,31 +16,31 @@ namespace IPtor.ViewModels
     public class StatisticsViewModel : ViewModelBase
     {
         private readonly ICarService _carService;
-        public ICommand LoadDataCommand { get; }
+        public ICommand LoadDataCommand { get; } //для исправления глюка, теперь загрузка данныхх для моделей идут через команду привязанную к событию onloaded
 
         private ObservableCollection<ISeries> _serviceSeries;
-        public ObservableCollection<ISeries> ServiceSeries
+        public ObservableCollection<ISeries> ServiceSeries //график машин по службам
         {
             get => _serviceSeries;
             set => Set(ref _serviceSeries, value);
         }
 
         private ObservableCollection<ISeries> _yearSeries;
-        public ObservableCollection<ISeries> YearSeries
+        public ObservableCollection<ISeries> YearSeries //графиик машин по годам
         {
             get => _yearSeries;
             set => Set(ref _yearSeries, value);
         }
 
         private Axis[] _xAxes;
-        public Axis[] XAxes
+        public Axis[] XAxes //ось X
         {
             get => _xAxes;
             set => Set(ref _xAxes, value);
         }
 
         private Axis[] _yAxes;
-        public Axis[] YAxes
+        public Axis[] YAxes //ось Y
         {
             get => _yAxes;
             set => Set(ref _yAxes, value);
@@ -46,32 +48,34 @@ namespace IPtor.ViewModels
 
         public StatisticsViewModel(ICarService carService)
         {
-            //System.Windows.MessageBox.Show("StatisticsViewModel создан");
             _carService = carService;
             //_ = LoadDataAsync();
-            LoadDataCommand = new RelayCommand(async _ => await LoadDataAsync()); //справление бага не загрузки данныз для диагграмм
+            LoadDataCommand = new RelayCommand(async _ => await LoadDataAsync()); //исправление бага не загрузки данныз для диагграмм
         }
 
-        private async Task LoadDataAsync()
+        private async Task LoadDataAsync() //загрузка данных и формирование диаграмм
         {
             var cars = (await _carService.GetAllCarsAsync()).ToList();
             //System.Windows.MessageBox.Show($"Загружено машин: {cars.Count}"); // для проверки, потом удалю
             //исправление бага когда машины не подгружаются
             await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
             {
-                // Pie
+                // Pie график машин по службам
                 var serviceGroups = cars
                     .GroupBy(c => c.Service)
                     .Select(g => new PieSeries<double>
                     {
                         Values = new double[] { g.Count() },
-                        Name = g.Key.ToString()
+                        Name = g.Key.ToString(),
+                        DataLabelsPosition = LiveChartsCore.Measure.PolarLabelsPosition.Middle, //для того что бы показывались количество машин в графике
+                        DataLabelsSize = 12, //размер цифр
+                        DataLabelsPaint = new SolidColorPaint(SKColors.White)
                     })
                     .ToList();
 
                 ServiceSeries = new ObservableCollection<ISeries>(serviceGroups);
 
-                // Column
+                // Column график машин по годам
                 var yearGroups = cars
                     .GroupBy(c => c.Year)
                     .OrderBy(g => g.Key)

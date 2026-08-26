@@ -22,6 +22,8 @@ namespace IPtor.Domain.Entities
         public string? NumberWheel { get; set; }
         public float? FuelAvail { get; set; }
         public string? Conclusion { get; set; }
+        //Дополнительно создано для истории актов
+        public DateTime ActDate { get; set; } = DateTime.Now;
 
         //навигационное свойство
         public int CarId { get; set; }

@@ -124,6 +124,9 @@ namespace IPtor.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DefectsId"));
 
+                    b.Property<DateTime>("ActDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("BackGear")
                         .HasColumnType("nvarchar(max)");
 
@@ -186,6 +189,9 @@ namespace IPtor.DAL.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DefectsTOId"));
+
+                    b.Property<DateTime>("ActDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Aptechka")
                         .HasColumnType("nvarchar(max)");
