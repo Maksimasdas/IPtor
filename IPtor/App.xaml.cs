@@ -30,6 +30,12 @@ namespace IPtor
                 .Build();
             var connectionString = configuration.GetConnectionString("DefaultConnection");
 
+            //подробные заметки по контейнеру, потому что тема сложная, надо оставить в памяти, что бы вспомнить если что
+            //AddScoped - это правило, если пишут ICarService значит нужен CarService и т.д.
+            //Scoped означает, что один на всех, все кто требуют ICarService получают его одну и ту же реализацию то есть один и тот же CarService
+            //почему так? ICarService это контракт, а CarService это его реализация, по сути мы просто говорим что нам надо и контейнер подчиняясь правилам дает нам реализацию того, что нам необходимо
+            //AddTransient - это регистрация моделей без интерфейсов - по самому классу
+            //Transient означает каждый раз новый, каждый когда запрашивают CarsViewModel и т.д. — создаётся новый экземпляр.
             // ===== БАЗА ДАННЫХ =====
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(connectionString));
@@ -67,7 +73,7 @@ namespace IPtor
             //диаграммы регистрация
             services.AddTransient<StatisticsViewModel>();
 
-            _serviceProvider = services.BuildServiceProvider();
+            _serviceProvider = services.BuildServiceProvider(); //контейнер заморожен, правила зафиксированы
         }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -130,7 +136,7 @@ namespace IPtor
                 Model = "4320",
                 Number = "А123ВС",
                 ClassName = "АШ",
-                Service = ServiceType.АМС,
+                Service = ServiceType.ЦМО,
                 Vin = "XTA432000A0000001",
                 Certificate = "СТС №123456",
                 EngineNumber = "ЯМЗ-236-001",

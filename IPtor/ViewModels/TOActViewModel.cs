@@ -3,6 +3,7 @@ using IPtor.Buisness.Models;
 using IPtor.Buisness.Services;
 using IPtor.Commands;
 using IPtor.Domain.Entities;
+using IPtor.Helpers;
 using IPtor.Views;
 using Microsoft.Win32;
 using System;
@@ -53,15 +54,15 @@ namespace IPtor.ViewModels
         }
 
         // Эксплуатация
-        private int _kmSpeedometrStart;
-        public int KmSpeedometrStart
+        private string _kmSpeedometrStart; //изменил
+        public string KmSpeedometrStart //изменил
         {
             get => _kmSpeedometrStart;
             set => Set(ref _kmSpeedometrStart, value);
         }
 
-        private float _mhSpeedStart;
-        public float MhSpeedStart
+        private string _mhSpeedStart;//изменил
+        public string MhSpeedStart//изменил
         {
             get => _mhSpeedStart;
             set => Set(ref _mhSpeedStart, value);
@@ -227,13 +228,16 @@ namespace IPtor.ViewModels
                 return;
             }
 
-            float fuel = 0;
-            if (!string.IsNullOrWhiteSpace(Fuel))
-            {
-                string normalized = Fuel.Replace(',', '.');
-                float.TryParse(normalized, System.Globalization.NumberStyles.Any,
-                    System.Globalization.CultureInfo.InvariantCulture, out fuel);
-            }
+            //float fuel = 0;
+            //if (!string.IsNullOrWhiteSpace(Fuel))
+            //{
+            //    string normalized = Fuel.Replace(',', '.');
+            //    float.TryParse(normalized, System.Globalization.NumberStyles.Any,
+            //        System.Globalization.CultureInfo.InvariantCulture, out fuel);
+            //}
+            float fuel = NumberParser.ParseFloat(Fuel);
+            int kmSpeedStart = NumberParser.ParseInt(KmSpeedometrStart);
+            float mhSpeedStart = NumberParser.ParseFloat(MhSpeedStart);
 
             var data = new TOAktData
             {
@@ -242,8 +246,8 @@ namespace IPtor.ViewModels
                 ResponcePerson = ResponcePerson,
                 Driver = Driver,
                 TransferDate = DateTime.Now,
-                KmSpeedometrStart = KmSpeedometrStart,
-                MhSpeedStart = MhSpeedStart,
+                KmSpeedometrStart = kmSpeedStart,
+                MhSpeedStart = mhSpeedStart,
                 DefectsTO = new DefectsTO
                 {
                     Body = Body,
@@ -292,7 +296,8 @@ namespace IPtor.ViewModels
             {
                 Filter = "Excel files (*.xlsx)|*.xlsx",
                 DefaultExt = "xlsx",
-                FileName = $"Акт_Тех_Состояния_{_car.Number}_{DateTime.Now:yyyyMMdd_HHmm}"
+                //FileName = $"Акт_Тех_Состояния_{_car.Number}_{DateTime.Now:yyyyMMdd_HHmm}"
+                FileName = $"Акт_Тех_Состояния_{_car.Number.Replace("/", "_")}_{DateTime.Now:yyyyMMdd_HHmm}"
             };
 
             if (saveDialog.ShowDialog() == true)
@@ -305,11 +310,12 @@ namespace IPtor.ViewModels
 
                 try
                 {
-                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                    {
-                        FileName = saveDialog.FileName,
-                        UseShellExecute = true
-                    });
+                    //System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    //{
+                    //    FileName = saveDialog.FileName,
+                    //    UseShellExecute = true
+                    //});
+                    FileHelper.OpenFile(saveDialog.FileName);
                 }
                 catch (Exception ex)
                 {

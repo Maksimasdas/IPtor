@@ -30,7 +30,7 @@
                         <TextBlock Text="Гос. номер" FontWeight="Bold" />
                         <TextBox Text="{Binding Number, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
 
-                        <TextBlock Text="Класс" FontWeight="Bold" />
+                        <TextBlock Text="Наименование ТС:" FontWeight="Bold" />
                         <TextBox Text="{Binding ClassName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
 
                         <TextBlock Text="Служба" FontWeight="Bold" />

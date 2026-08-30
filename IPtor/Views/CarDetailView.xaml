@@ -4,7 +4,11 @@
         Title="Информация о машине" 
         Height="600" Width="800"
         WindowStartupLocation="CenterScreen">
-
+    <Window.Resources>
+        <Style TargetType="TextBox">
+            <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
+        </Style>
+    </Window.Resources>
     <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -34,7 +38,7 @@
                         <TextBlock Text="Гос. номер" FontWeight="Bold" />
                         <TextBox Text="{Binding Car.Number, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
 
-                        <TextBlock Text="Класс" FontWeight="Bold" />
+                        <TextBlock Text="Наименование ТС" FontWeight="Bold" />
                         <TextBox Text="{Binding Car.ClassName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
 
                         <TextBlock Text="Служба" FontWeight="Bold" />

@@ -32,16 +32,6 @@ namespace IPtor.Buisness.Services
             }
         }
 
-        //public async Task<IEnumerable<Person>> GetAllPersonsAsync()
-        //{
-        //   return await _uow.Persons.GetAllAsync();
-        //}
-
-        //public async Task<Person> GetPersonByIdAsync(int id)
-        //{
-        //    return await _uow.Persons.GetByIdAsync(id);   
-        //}
-
         public async Task UpdatePersonAsync(Person person)
         {
             //исправление глюка с невозможностью отредактировать дважды одного и того же человека
@@ -57,18 +47,20 @@ namespace IPtor.Buisness.Services
 
                 await _uow.SaveChangesAsync();
             }
-            //_uow.Persons.Update(person);
-            //await _uow.SaveChangesAsync();
         }
-
+        //получить всех рабтников
         public async Task<IEnumerable<Person>> GetAllPersonsAsync()
         {
-            return await _uow.Persons.GetAllPersonsWithNoTrackingAsync();
+            //return await _uow.Persons.GetAllPersonsWithNoTrackingAsync();
+            return await _uow.Persons.GetAllAsync();
         }
-
+        //получить работника по ИД
         public async Task<Person> GetPersonByIdAsync(int id)
         {
-            return await _uow.Persons.GetPersonWithNoTrackingAsync(id);
+            //return await _uow.Persons.GetPersonWithNoTrackingAsync(id);
+            //return await _uow.Persons.GetByIdAsync(id);
+            var persons = await _uow.Persons.FindAllAsync(p => p.PersonId == id);
+            return persons.FirstOrDefault();
         }
     }
 }

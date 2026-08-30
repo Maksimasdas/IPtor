@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\PriemOchka1.ico" />
     <None Remove="Templates\Акт_передачи_шаблон.xlsx" />
     <None Remove="Templates\Акт_передачи_шаблон2.xlsx" />
   </ItemGroup>
@@ -23,9 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Images\" />
     <Folder Include="Infrastukture\" />
-    <Folder Include="Helpers\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,6 +41,12 @@
   <ItemGroup>
     <ProjectReference Include="..\IPtor.Buisness\IPtor.Buisness.csproj" />
     <ProjectReference Include="..\IPtor.Domain\IPtor.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\PriemOchka1.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>

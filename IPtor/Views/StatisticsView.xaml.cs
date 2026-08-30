@@ -23,7 +23,7 @@ namespace IPtor.Views
         {
             InitializeComponent();
         }
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        private void UserControl_Loaded(object sender, RoutedEventArgs e) //событие которое срабатывает при загрузке ЮК и запускает загрузку данныхх к нему
         {
             if (DataContext is StatisticsViewModel vm)
             {

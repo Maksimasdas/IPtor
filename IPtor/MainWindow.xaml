@@ -8,9 +8,10 @@
         xmlns:vm="clr-namespace:IPtor.ViewModels"
         mc:Ignorable="d"
         Title="IPtor - Учёт автотранспорта" Height="600" Width="900"
-         WindowStartupLocation="CenterScreen">
-    <Window.Resources>
-        <!-- Когда CurrentView = CarsViewModel → показать CarsView -->
+        WindowStartupLocation="CenterScreen"
+        Icon="/Images/PriemOchka1.ico">
+    <Window.Resources> 
+        <!-- Когда CurrentView = CarsViewModel -> показать CarsView и т.д. -->
         <DataTemplate DataType="{x:Type vm:CarsViewModel}">
             <views:CarsView />
         </DataTemplate>
@@ -24,10 +25,6 @@
             <views:StatisticsView />
         </DataTemplate>
 
-        <!-- Место для ReportsViewModel — добавим позже -->
-        <!-- <DataTemplate DataType="{x:Type vm:ReportsViewModel}">
-            <views:ReportsView />
-        </DataTemplate> -->
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>

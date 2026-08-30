@@ -130,6 +130,7 @@ namespace IPtor.ViewModels
         public ICommand DeleteTireCommand { get; }
         public ICommand SaveCommand { get; }
 
+        //===== КОНСТРУКТОР =====
         public AddCarViewModel(ICarService carService)
         {
             _carService = carService;

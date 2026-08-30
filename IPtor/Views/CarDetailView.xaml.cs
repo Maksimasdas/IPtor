@@ -1,4 +1,5 @@
-﻿using IPtor.ViewModels;
+﻿using IPtor.Helpers;
+using IPtor.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -23,6 +24,10 @@ namespace IPtor.Views
             InitializeComponent();
             DataContext = viewModel;
             viewModel.CloseAction = Close;  // ← Привязываем закрытие окна почему-то тут не работает
+        }
+        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            UiHelper.TextBoxGotFocus(sender, e);
         }
     }
 }

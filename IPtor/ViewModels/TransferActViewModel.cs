@@ -2,6 +2,7 @@
 using IPtor.Buisness.Models;
 using IPtor.Commands;
 using IPtor.Domain.Entities;
+using IPtor.Helpers;
 using IPtor.Views;
 using Microsoft.Win32;
 using System;
@@ -74,8 +75,8 @@ namespace IPtor.ViewModels
             set => Set(ref _kmSpeedStart, value);
         }
 
-        private float _mhSpeedStart;
-        public float MhSpeedStart
+        private string _mhSpeedStart; //изменил
+        public string MhSpeedStart //изменил
         {
             get => _mhSpeedStart;
             set => Set(ref _mhSpeedStart, value);
@@ -102,8 +103,8 @@ namespace IPtor.ViewModels
             set => Set(ref _kmSpeedKarRepair, value);
         }
 
-        private float _mhSpeedKapRepair;
-        public float MhSpeedKapRepair
+        private string _mhSpeedKapRepair; //изменил
+        public string MhSpeedKapRepair //изменил
         {
             get => _mhSpeedKapRepair;
             set => Set(ref _mhSpeedKapRepair, value);
@@ -116,8 +117,8 @@ namespace IPtor.ViewModels
             set => Set(ref _kmSpeedTO, value);
         }
 
-        private float _mhSpeedTO;
-        public float MhSpeedTO
+        private string _mhSpeedTO; //изменил
+        public string MhSpeedTO //изменил
         {
             get => _mhSpeedTO;
             set => Set(ref _mhSpeedTO, value);
@@ -277,14 +278,18 @@ namespace IPtor.ViewModels
             }
 
             // Нормализация топлива — заменяем запятую на точку
-            float fuel = 0;
-            if (!string.IsNullOrWhiteSpace(FuelAvail))
-            {
-                string normalized = FuelAvail.Replace(',', '.');
-                float.TryParse(normalized, System.Globalization.NumberStyles.Any,
-                    System.Globalization.CultureInfo.InvariantCulture, out fuel);
-            }
-
+            //float fuel = 0;
+            //if (!string.IsNullOrWhiteSpace(FuelAvail))
+            //{
+            //    string normalized = FuelAvail.Replace(',', '.');
+            //    float.TryParse(normalized, System.Globalization.NumberStyles.Any,
+            //        System.Globalization.CultureInfo.InvariantCulture, out fuel);
+            //}
+            float fuel = NumberParser.ParseFloat(FuelAvail);
+            //парсинг дробных чисел которые пришли как стринг
+            float mhSpeedStart = NumberParser.ParseFloat(MhSpeedStart);
+            float mhSpeedKapRepair = NumberParser.ParseFloat(MhSpeedKapRepair);
+            float mhSpeedTO = NumberParser.ParseFloat(MhSpeedTO);
             // Собираем данные
             var data = new TransferActData
             {
@@ -297,18 +302,18 @@ namespace IPtor.ViewModels
                 TransferDate = DateTime.Now,
 
                 KmSpeedStart = KmSpeedStart,
-                MhSpeedStart = MhSpeedStart,
-                KmGeneral = KmSpeedStart + (int)(MhSpeedStart * 50),
+                MhSpeedStart = mhSpeedStart,
+                KmGeneral = KmSpeedStart + (int)(mhSpeedStart * 50),
                 AvarageRepair = AvarageRepair,
                 KapRepair = KapRepair,
 
                 KmSpeedKarRepair = KmSpeedStart - KmSpeedKarRepair,
-                MhSpeedKapRepair = MhSpeedStart - MhSpeedKapRepair,
-                KmGeneralKapRepair = (KmSpeedStart - KmSpeedKarRepair) + (int)((MhSpeedStart - MhSpeedKapRepair) * 50),
+                MhSpeedKapRepair = mhSpeedStart - mhSpeedKapRepair,
+                KmGeneralKapRepair = (KmSpeedStart - KmSpeedKarRepair) + (int)((mhSpeedStart - mhSpeedKapRepair) * 50),
 
                 KmSpeedTO = KmSpeedStart - KmSpeedTO,
-                MhSpeedTO = MhSpeedStart - MhSpeedTO,
-                KmGeneralTO = (KmSpeedStart - KmSpeedTO) + (int)((MhSpeedStart - MhSpeedTO) * 50),
+                MhSpeedTO = mhSpeedStart - mhSpeedTO,
+                KmGeneralTO = (KmSpeedStart - KmSpeedTO) + (int)((mhSpeedStart - mhSpeedTO) * 50),
 
                 Defects = new Defects
                 {
@@ -335,7 +340,8 @@ namespace IPtor.ViewModels
             {
                 Filter = "Excel files (*.xlsx)|*.xlsx",
                 DefaultExt = "xlsx",
-                FileName = $"Акт_передачи_{_car.Number}_{DateTime.Now:yyyyMMdd_HHmm}"
+                //FileName = $"Акт_передачи_{_car.Number}_{DateTime.Now:yyyyMMdd_HHmm}" 
+                FileName = $"Акт_передачи_{_car.Number.Replace("/", "_")}_{DateTime.Now:yyyyMMdd_HHmm}"
             };
 
             if (saveDialog.ShowDialog() == true)
@@ -349,11 +355,12 @@ namespace IPtor.ViewModels
 
                 try
                 {
-                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                    {
-                        FileName = saveDialog.FileName,
-                        UseShellExecute = true
-                    });
+                    //System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    //{
+                    //    FileName = saveDialog.FileName,
+                    //    UseShellExecute = true
+                    //});
+                    FileHelper.OpenFile(saveDialog.FileName);
                 }
                 catch (Exception ex)
                 {

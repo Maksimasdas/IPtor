@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Windows;
 using System.Windows.Input;
 
 namespace IPtor.ViewModels
@@ -15,6 +16,7 @@ namespace IPtor.ViewModels
     public class PersonsViewModel : ViewModelBase
     {
         private readonly IPersonService _personService;
+        private List<Person> _allPersons;
 
         //===коллекции===
         private ObservableCollection<Person> _persons;
@@ -30,6 +32,14 @@ namespace IPtor.ViewModels
         {
             get => _selectedPerson;
             set => Set(ref _selectedPerson, value);
+        }
+
+        //=== поиск ===
+        private string _searchText;
+        public string SearchText
+        {
+            get => _searchText;
+            set => Set(ref _searchText, value);
         }
 
         //=== поля для нового сотрудника
@@ -76,6 +86,8 @@ namespace IPtor.ViewModels
         public ICommand AddPersonCommand { get; }
         public ICommand DeletePersonCommand { get; }
         public ICommand OpenPersonDetailCommand { get; }
+        public ICommand SearchCommand { get; }
+        public ICommand ClearSearchCommand { get; }
 
         public PersonsViewModel(IPersonService personService)
         {
@@ -91,16 +103,42 @@ namespace IPtor.ViewModels
             AddPersonCommand = new RelayCommand(async _ => await AddPersonAsync(), __ => !string.IsNullOrWhiteSpace(NewName));
             DeletePersonCommand = new RelayCommand(async _ => await DeletePersonAsync(), _ => SelectedPerson != null);
             OpenPersonDetailCommand = new RelayCommand(_ => OpenPersonDetail(), _ => SelectedPerson != null);
+            SearchCommand = new RelayCommand(_ => SearchPersons());
+            ClearSearchCommand = new RelayCommand(_ => ClearSearch());
 
             _ = LoadPersonsAsync();
+        }
+
+        private void ClearSearch()
+        {
+            SearchText = string.Empty;
+            if (_allPersons != null)
+                SearchPersons();
         }
 
         private async Task LoadPersonsAsync()
         {
             var persons = await _personService.GetAllPersonsAsync();
+            _allPersons = persons.ToList();
             Persons = new ObservableCollection<Person>(persons);
         }
 
+        private void SearchPersons()
+        {
+            if (_allPersons == null) return; //защита на всякий случай
+
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                Persons = new ObservableCollection<Person>(_allPersons);
+                return;
+            }
+
+            var filtered = _allPersons
+                .Where(p => p.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            Persons = new ObservableCollection<Person>(filtered);
+        }
         private async Task AddPersonAsync()
         {
             ServiceType service;
@@ -136,8 +174,19 @@ namespace IPtor.ViewModels
         {
             if (SelectedPerson == null) return;
 
-            await _personService.DeletePersonAsync(SelectedPerson.PersonId);
-            Persons.Remove(SelectedPerson);
+            MessageBoxResult result = MessageBox.Show(
+                    $"Вы действительно хотите удалить сотрудника {_selectedPerson.Name}?",
+                    "Подтверждение удаления",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+            if(result == MessageBoxResult.Yes)
+            {
+                await _personService.DeletePersonAsync(SelectedPerson.PersonId);
+                Persons.Remove(SelectedPerson);
+            }
+
+            //await _personService.DeletePersonAsync(SelectedPerson.PersonId);
+            //Persons.Remove(SelectedPerson);
         }
 
         private void OpenPersonDetail()

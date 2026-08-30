@@ -7,10 +7,10 @@ namespace IPtor.Buisness.Interfaces
 {
     public interface IPersonService
     {
-        Task<IEnumerable<Person>> GetAllPersonsAsync();
-        Task<Person> GetPersonByIdAsync(int id);
-        Task AddPersonAsync(Person person);
-        Task UpdatePersonAsync(Person person);
-        Task DeletePersonAsync(int id);
+        Task<IEnumerable<Person>> GetAllPersonsAsync(); // получить всех работников
+        Task<Person> GetPersonByIdAsync(int id); // получить работника по ИД
+        Task AddPersonAsync(Person person); // добавить работника
+        Task UpdatePersonAsync(Person person); // обновить работника
+        Task DeletePersonAsync(int id); // удалить работника
     }
 }

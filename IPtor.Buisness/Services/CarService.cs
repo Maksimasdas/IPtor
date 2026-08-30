@@ -15,12 +15,14 @@ namespace IPtor.Buisness.Services
         {
             _uow = uow;
         }
+
+        //добавить машину
         public async Task AddCarAsync(Car car)
         {
             await _uow.Cars.AddAsync(car);
             await _uow.SaveChangesAsync();
         }
-
+        //удалить машшину
         public async Task DeleteCarAsync(int id)
         {
             var car = await _uow.Cars.GetByIdAsync(id);
@@ -30,27 +32,27 @@ namespace IPtor.Buisness.Services
                 await _uow.SaveChangesAsync();
             }
         }
-
+        //получить все машины
         public async Task<IEnumerable<Car>> GetAllCarsAsync()
         {
             return await _uow.Cars.GetAllAsync();
         }
-
+        //получить машины определенной службы
         public async Task<IEnumerable<Car>> GetCarsByServiceAsync(ServiceType service)
         {
             return await _uow.Cars.GetCarsByServiceAsync(service);
         }
-
+        //получить машину с полной информацией
         public async Task<IEnumerable<Car>> GetCarsWithDetailsAsync()
         {
             return await _uow.Cars.GetCarsWithDetailsAsync();
         }
-
+        //получить машину с полной информацией
         public async Task<Car> GetCarWithFullInfoAsync(int id)
         {
             return await _uow.Cars.GetCarWithFullInfoAsync(id);
         }
-
+        //обновить машину
         public async Task UpdateCarAsync(Car car)
         {
             //исправление глюка с невозможностью отредактировать дважды одну и ту же машину
@@ -73,24 +75,20 @@ namespace IPtor.Buisness.Services
             
                 await _uow.SaveChangesAsync();
             }
-
-
-
-            //_uow.Cars.Update(car);
-            //await _uow.SaveChangesAsync();
         }
+        //добавить АКБ
         public async Task AddBatteryAsync(Battery battery)
         {
             await _uow.Batteries.AddAsync(battery);
             await _uow.SaveChangesAsync();
         }
-
+        //добавить шину
         public async Task AddTireAsync(Tire tire)
         {
             await _uow.Tires.AddAsync(tire);
             await _uow.SaveChangesAsync();
         }
-
+        //удалить АКБ
         public async Task DeleteBatteryAsync(int id)
         {
             var battery = await _uow.Batteries.GetByIdAsync(id);
@@ -100,7 +98,7 @@ namespace IPtor.Buisness.Services
                 await _uow.SaveChangesAsync();
             }
         }
-
+        //удалить шину
         public async Task DeleteTireAsync(int id)
         {
             var tire = await _uow.Tires.GetByIdAsync(id);
@@ -120,6 +118,36 @@ namespace IPtor.Buisness.Services
         {
             await _uow.DefectsTOs.AddAsync(defectsTO);
             await _uow.SaveChangesAsync();
+        }
+        
+        //методы для обновления шин и акб 2 метода
+        public async Task UpdateBatteryAsync(Battery battery)
+        {
+            var existing = await _uow.Batteries.GetByIdAsync(battery.BatteryId);
+            if(existing != null)
+            {
+                existing.Specifications = battery.Specifications;
+                existing.StartingCurrent = battery.StartingCurrent;
+                existing.Polarity = battery.Polarity;
+                existing.BodyType = battery.BodyType;
+                existing.InstallationDate = battery.InstallationDate;
+                await _uow.SaveChangesAsync();
+            }
+        }
+
+        public async Task UpdateTireAsync(Tire tire)
+        {
+            var existing = await _uow.Tires.GetByIdAsync(tire.TireId);
+            if(existing != null)
+            {
+                existing.Width = tire.Width;
+                existing.Profile = tire.Profile;
+                existing.Diameter = tire.Diameter;
+                existing.Brand = tire.Brand;
+                existing.Model = tire.Model;
+                existing.InstallationDate = tire.InstallationDate;
+                await _uow.SaveChangesAsync();
+            }
         }
     }
 }

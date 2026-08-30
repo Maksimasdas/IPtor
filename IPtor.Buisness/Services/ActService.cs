@@ -36,8 +36,7 @@ namespace IPtor.Buisness.Services
             return new TransferActData
             {
                 Car = car
-                // Остальные поля (SheffPassService, Driver, пробег и т.д.)
-                // будут заполнены пользователем в UI
+                // Остальные поля (SheffPassService, Driver, пробег и т.д будут заполнены пользователем в UI
             };
         }
     }

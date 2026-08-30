@@ -88,7 +88,7 @@ namespace IPtor.Buisness.Services
             {
                 var worksheet = workbook.Worksheet(1);
 
-                // Вспомогательный метод
+                // Вспомогательный метод на случай оставления полей пустыми
                 string GetValueOrDefault(string value, string defaultValue = "Удовлетворительно")
                 {
                     return string.IsNullOrWhiteSpace(value) ? defaultValue : value;

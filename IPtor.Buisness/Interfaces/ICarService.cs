@@ -15,11 +15,13 @@ namespace IPtor.Buisness.Interfaces
         Task AddCarAsync(Car car);                                         // Добавить машину
         Task UpdateCarAsync(Car car);                                      // Обновить машину
         Task DeleteCarAsync(int id);                                       // Удалить машину
-        Task AddBatteryAsync(Battery battery);                             //добавить акб
-        Task AddTireAsync(Tire tire);                                      //доабвить шину
-        Task DeleteBatteryAsync(int id);                                   //удалить акб
-        Task DeleteTireAsync(int id);                                      //удалить шину
-        Task AddDefectsAsync(Defects defects);                             //сохранить историю акта приемки
-        Task AddDefectsTOAsync(DefectsTO defectsTO);                       //сохранить историю акта ТО
+        Task AddBatteryAsync(Battery battery);                             // добавить акб
+        Task AddTireAsync(Tire tire);                                      // доабвить шину
+        Task DeleteBatteryAsync(int id);                                   // удалить акб
+        Task DeleteTireAsync(int id);                                      // удалить шину
+        Task AddDefectsAsync(Defects defects);                             // сохранить историю акта приемки
+        Task AddDefectsTOAsync(DefectsTO defectsTO);                       // сохранить историю акта ТО
+        Task UpdateBatteryAsync(Battery battery);                          // обновить акб
+        Task UpdateTireAsync(Tire tire);                                   // обновить шину
     }
 }

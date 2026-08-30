@@ -1,4 +1,5 @@
-﻿using IPtor.ViewModels;
+﻿using IPtor.Helpers;
+using IPtor.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -26,13 +27,7 @@ namespace IPtor.Views
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
         {
-            if (sender is TextBox textBox && !textBox.IsReadOnly)
-            {
-                Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    textBox.SelectAll();
-                }), System.Windows.Threading.DispatcherPriority.Input);
-            }
+            UiHelper.TextBoxGotFocus(sender, e);
         }
         private void ListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {

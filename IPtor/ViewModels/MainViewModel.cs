@@ -1,9 +1,4 @@
-﻿using DocumentFormat.OpenXml.InkML;
-using DocumentFormat.OpenXml.Presentation;
-using IPtor.Commands;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using IPtor.Commands;
 using System.Windows.Input;
 
 namespace IPtor.ViewModels
@@ -38,17 +33,17 @@ namespace IPtor.ViewModels
 
             // Команда: переключиться на список машин
             ShowCarsCommand = new RelayCommand(_ => CurrentView = carsViewModel);
-            ShowPersonsCommand = new RelayCommand(_ => 
+            ShowPersonsCommand = new RelayCommand(_ =>
             {
                 CurrentView = personsViewModel;
                 personsViewModel.LoadPersonsCommand.Execute(null);
             });
 
-            // Команда: переключиться на отчёты (пока заглушка)
+            // Команда: переключиться на заявки
             ShowRepairRequestsCommand = new RelayCommand(_ =>
             {
                 CurrentView = repairRequestsViewModel;
-                repairRequestsViewModel.LoadRequestsCommand.Execute(null);  // ← загрузка здесь
+                repairRequestsViewModel.LoadRequestsCommand.Execute(null);
             });
 
             //команда для статистики

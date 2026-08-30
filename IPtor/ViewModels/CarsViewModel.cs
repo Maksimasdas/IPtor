@@ -7,6 +7,7 @@ using IPtor.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace IPtor.ViewModels
@@ -17,6 +18,8 @@ namespace IPtor.ViewModels
         private readonly IPersonService _personService;
         private readonly IReportService _reportService;
         private readonly IRepairRequestService _repairRequestService;
+
+        private List<Car> _allCars;
 
         // ===== КОЛЛЕКЦИЯ МАШИН =====
         private ObservableCollection<Car> _cars;
@@ -42,9 +45,18 @@ namespace IPtor.ViewModels
             {
                 if (Set(ref _selectedServiceFilter, value))
                 {
-                    _ = LoadCarsAsync();
+                    //_ = LoadCarsAsync();
+                    ApplyFilters();
                 }
             }
+        }
+
+        //поиск по номеру
+        private string _searchNumber;
+        public string SearchNumber
+        {
+            get => _searchNumber;
+            set => Set(ref _searchNumber, value);
         }
 
         // ===== СВОЙСТВО ЗАГРУЗКИ =====
@@ -62,6 +74,8 @@ namespace IPtor.ViewModels
         public ICommand CreateTransferActCommand { get; }
         public ICommand CreateTOActCommand { get; }
         public ICommand CreateRepairRequestCommand { get; }
+        public ICommand SearchCommand { get; }
+        public ICommand ClearSearchCommand { get; }
 
         // ===== СПИСОК СЛУЖБ ДЛЯ ФИЛЬТРА =====
         public ObservableCollection<string> ServiceTypes { get; }
@@ -89,6 +103,8 @@ namespace IPtor.ViewModels
             CreateTransferActCommand = new RelayCommand(_ => OpenTransferActWindow(), _ => SelectedCar != null);
             CreateTOActCommand = new RelayCommand(_ => OpenTOActWindow(), _ => SelectedCar != null);
             CreateRepairRequestCommand = new RelayCommand(_ => OpenRepairRequestWindow(), _ => SelectedCar != null);
+            SearchCommand = new RelayCommand(_ => ApplyFilters());
+            ClearSearchCommand = new RelayCommand(_ => ClearSearch());
 
             // При старте сразу загружаем машины
             _ = LoadCarsAsync();
@@ -104,38 +120,92 @@ namespace IPtor.ViewModels
             // После закрытия окна — обновляем список
             _ = LoadCarsAsync();
         }
+        //private async Task LoadCarsAsync()
+        //{
+        //    IsLoading = true;
+        //    try
+        //    {
+        //        IEnumerable<Car> cars;
+
+        //        if (SelectedServiceFilter == "Все службы")
+        //        {
+        //            cars = await _carService.GetCarsWithDetailsAsync();
+        //        }
+        //        else
+        //        {
+        //            var service = (ServiceType)System.Enum.Parse(typeof(ServiceType), SelectedServiceFilter);
+        //            cars = await _carService.GetCarsByServiceAsync(service);
+        //        }
+
+        //        Cars = new ObservableCollection<Car>(cars);
+        //    }
+        //    finally
+        //    {
+        //        IsLoading = false;
+        //    }
+        //}
         private async Task LoadCarsAsync()
         {
             IsLoading = true;
             try
             {
-                IEnumerable<Car> cars;
-
-                if (SelectedServiceFilter == "Все службы")
-                {
-                    cars = await _carService.GetCarsWithDetailsAsync();
-                }
-                else
-                {
-                    var service = (ServiceType)System.Enum.Parse(typeof(ServiceType), SelectedServiceFilter);
-                    cars = await _carService.GetCarsByServiceAsync(service);
-                }
-
-                Cars = new ObservableCollection<Car>(cars);
+                var cars = await _carService.GetCarsWithDetailsAsync();
+                _allCars = cars.ToList();
+                ApplyFilters();
             }
             finally
             {
                 IsLoading = false;
             }
         }
+        private void ApplyFilters()
+        {
+            if (_allCars == null) return;
+
+            IEnumerable<Car> filtered = _allCars;
+
+            // Фильтр по службе
+            if (SelectedServiceFilter != "Все службы")
+            {
+                var service = (ServiceType)System.Enum.Parse(typeof(ServiceType), SelectedServiceFilter);
+                filtered = filtered.Where(c => c.Service == service);
+            }
+
+            // Фильтр по номеру
+            if (!string.IsNullOrWhiteSpace(SearchNumber))
+            {
+                filtered = filtered.Where(c =>
+                    c.Number.Contains(SearchNumber, StringComparison.OrdinalIgnoreCase) ||
+                    c.Name.Contains(SearchNumber, StringComparison.OrdinalIgnoreCase) ||
+                    c.Model.Contains(SearchNumber, StringComparison.OrdinalIgnoreCase));
+            }
+
+            Cars = new ObservableCollection<Car>(filtered);
+        }
+        private void ClearSearch()
+        {
+            SearchNumber = string.Empty;
+            //ApplyFilters();
+            _ = LoadCarsAsync();
+        }
         private async Task DeleteCarAsync()
         {
             if (SelectedCar == null) return;
 
-            await _carService.DeleteCarAsync(SelectedCar.CarId);
+            MessageBoxResult result = MessageBox.Show(
+                   $"Вы действительно хотите удалить автомобиль {_selectedCar.Model} ({_selectedCar.Number})?",
+                   "Подтверждение удаления",
+                   MessageBoxButton.YesNo,
+                   MessageBoxImage.Question);
 
-            // Удаляем из коллекции на экране
-            Cars.Remove(SelectedCar);
+            if (result == MessageBoxResult.Yes)
+            {
+                await _carService.DeleteCarAsync(SelectedCar.CarId);
+
+                await LoadCarsAsync();
+                //Cars.Remove(SelectedCar);
+                //_allCars.Remove(SelectedCar);
+            }
         }
         private void OpenCarDetail()
         {

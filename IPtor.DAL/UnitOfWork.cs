@@ -16,8 +16,8 @@ namespace IPtor.DAL
         private IRepository<Tire> _tires;
         private IRepository<Defects> _defects;
         private IRepository<DefectsTO> _defectsTOs;
-        //private IRepository<Person> _persons;
-        private IPersonRepository _persons;
+        private IRepository<Person> _persons;
+        //private IPersonRepository _persons;
         private IRepository<RepairRequest> _repairRequests;
         public UnitOfWork(AppDbContext context)
         {
@@ -34,8 +34,8 @@ namespace IPtor.DAL
 
         public IRepository<DefectsTO> DefectsTOs => _defectsTOs ??= new EntityRepository<DefectsTO>(_context);
 
-        //public IRepository<Person> Persons => _persons ??= new EntityRepository<Person>(_context);
-        public IPersonRepository Persons => _persons ??= new PersonRepository(_context);
+        public IRepository<Person> Persons => _persons ??= new EntityRepository<Person>(_context);
+        //public IPersonRepository Persons => _persons ??= new PersonRepository(_context);
         public IRepository<RepairRequest> RepairRequests => _repairRequests ??= new EntityRepository<RepairRequest>(_context);
 
         public void Dispose()

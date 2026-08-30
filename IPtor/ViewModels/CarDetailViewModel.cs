@@ -110,7 +110,7 @@ namespace IPtor.ViewModels
 
         private async Task SaveAsync()
         {
-            if (Car == null) return;
+            if (Car == null) return; 
 
             // Обновляем машину
             await _carService.UpdateCarAsync(Car);
@@ -120,12 +120,16 @@ namespace IPtor.ViewModels
             {
                 if (battery.BatteryId == 0)  // Новая запись
                     await _carService.AddBatteryAsync(battery);
+                else
+                    await _carService.UpdateBatteryAsync(battery); //если не новая, то обновляем
             }
 
             foreach (var tire in Tires)
             {
                 if (tire.TireId == 0)  // Новая запись
                     await _carService.AddTireAsync(tire);
+                else
+                    await _carService.UpdateTireAsync(tire); //если не новая, то обновляем
             }
 
             System.Windows.MessageBox.Show("Изменения сохранены!", "Успех",
