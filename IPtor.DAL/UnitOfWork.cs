@@ -1,9 +1,6 @@
 ﻿using IPtor.DAL.Interfaces;
 using IPtor.DAL.Repositories;
 using IPtor.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace IPtor.DAL
 {

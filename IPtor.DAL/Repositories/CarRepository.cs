@@ -31,12 +31,26 @@ namespace IPtor.DAL.Repositories
         public async Task<Car> GetCarWithFullInfoAsync(int id)
         {
             return await _context.Cars
-                .Include(c => c.Batteries)
-                .Include(c => c.Tires)
-                .Include(c => c.Defects)
-                .Include(c => c.DefectsTO)
-                .AsNoTracking()   // что бы не городить город копий, просто уберем сохранения без явной команды
-                .FirstOrDefaultAsync(c => c.CarId == id);
+                   .Include(c => c.Batteries)
+                   .Include(c => c.Tires)
+                   .Include(c => c.Defects)
+                       .ThenInclude(d => d.SheffPassService)
+                   .Include(c => c.Defects)
+                       .ThenInclude(d => d.ResponcePerson)
+                   .Include(c => c.Defects)
+                       .ThenInclude(d => d.Driver)
+                   .Include(c => c.Defects)
+                       .ThenInclude(d => d.AcceptUtoPerson)
+                   .Include(c => c.Defects)
+                       .ThenInclude(d => d.AdditionalPerson)
+                   .Include(c => c.DefectsTO)
+                       .ThenInclude(d => d.SheffPassService)
+                   .Include(c => c.DefectsTO)
+                       .ThenInclude(d => d.ResponcePerson)
+                   .Include(c => c.DefectsTO)
+                       .ThenInclude(d => d.Driver)
+                   .AsNoTracking()
+                   .FirstOrDefaultAsync(c => c.CarId == id);
         }
     }
 }

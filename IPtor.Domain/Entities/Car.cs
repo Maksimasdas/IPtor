@@ -1,7 +1,4 @@
 ﻿using IPtor.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using IPtor.Domain.Entities;
 
 namespace IPtor.Domain.Entities
 {

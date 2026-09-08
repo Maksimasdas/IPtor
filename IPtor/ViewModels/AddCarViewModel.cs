@@ -190,9 +190,12 @@ namespace IPtor.ViewModels
 
         private async Task SaveAsync()
         {
-            if (SelectedService == null)
+            if (Name == null || Model == null || Number == null || SelectedService == null)
             {
-                MessageBox.Show("Необходимо указать службу");
+                MessageBox.Show("Поля: Наименование, Модель, Гос. номер и Служба должны быть заполнены",
+                    "Предупреждение",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
                 return;
             }
 

@@ -371,6 +371,20 @@ namespace IPtor.ViewModels
                 var defects = new Defects
                 {
                     CarId = _car.CarId,
+                    ActDate = DateTime.Now,
+
+                    //сотрудники
+                    SheffPassServiceId = SheffPassService?.PersonId,
+                    ResponcePersonId = ResponcePerson?.PersonId,
+                    DriverId = Driver?.PersonId,
+                    AcceptUtoPersonId = AcceptUtoPerson?.PersonId,
+                    AdditionalPersonId = AdditionalPerson?.PersonId,
+
+                    // Пробег и моточасы
+                    KmSpeedStart = KmSpeedStart,
+                    MhSpeedStart = mhSpeedStart,
+                    
+                    //дефекты
                     Staff = Staff,
                     EngineDefect = EngineDefect,
                     Electro = Electro,

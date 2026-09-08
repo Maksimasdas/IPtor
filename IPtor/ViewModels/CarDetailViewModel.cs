@@ -1,20 +1,25 @@
 ﻿using IPtor.Buisness.Interfaces;
+using IPtor.Buisness.Models;
 using IPtor.Commands;
 using IPtor.Domain.Entities;
 using IPtor.Domain.Enums;
+using IPtor.Helpers;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace IPtor.ViewModels
 {
     public class CarDetailViewModel : ViewModelBase
     {
         private readonly ICarService _carService;
+        private readonly IReportService _reportService;
         private readonly int _carId;
 
         public Action CloseAction { get; set; } //для закрытия окна после добавлнеия машины
@@ -46,6 +51,10 @@ namespace IPtor.ViewModels
         //кодманда для обновления списка истории актов
         public ICommand RefreshCommand { get; }
 
+        //команды для актов
+        public ICommand OpenDefectActCommand { get; }
+        public ICommand OpenTOActCommand { get; }
+
         // Выбранные элементы
         private Battery _selectedBattery;
         public Battery SelectedBattery
@@ -61,9 +70,24 @@ namespace IPtor.ViewModels
             set => Set(ref _selectedTire, value);
         }
 
-        public CarDetailViewModel(ICarService carService, int carId)
+        //выбранные акты
+        private Defects _selectedDefect;
+        public Defects SelectedDefect
+        {
+            get => _selectedDefect;
+            set => Set(ref _selectedDefect, value);
+        }
+        private DefectsTO _selectedDefectTO;
+        public DefectsTO SelectedDefectTO
+        {
+            get => _selectedDefectTO;
+            set => Set(ref _selectedDefectTO, value);
+        }
+
+        public CarDetailViewModel(ICarService carService, IReportService reportService, int carId)
         {
             _carService = carService;
+            _reportService = reportService;
             _carId = carId;
 
             //помоему не хватает заполнения комбобокса служб
@@ -86,6 +110,9 @@ namespace IPtor.ViewModels
             AddTireCommand = new RelayCommand(_ => AddTire());
             DeleteTireCommand = new RelayCommand(_ => DeleteTire(), _ => SelectedTire != null);
             RefreshCommand = new RelayCommand(async _ => await LoadCarAsync());
+
+            OpenDefectActCommand = new RelayCommand(_ => OpenDefectAct(), _ => SelectedDefect != null);
+            OpenTOActCommand = new RelayCommand(_ => OpenTOAct(), _ => SelectedDefectTO != null);
 
             _ = LoadCarAsync();
         }
@@ -187,6 +214,71 @@ namespace IPtor.ViewModels
                 await _carService.DeleteTireAsync(SelectedTire.TireId);
 
             Tires.Remove(SelectedTire);
+        }
+
+        //методы для восстановления акта из истории
+        private void OpenDefectAct()
+        {
+            if (SelectedDefect == null || Car == null) return;
+
+            var data = new TransferActData
+            {
+                Car = Car,
+                TransferDate = SelectedDefect.ActDate,
+                SheffPassService = SelectedDefect.SheffPassService,
+                ResponcePerson = SelectedDefect.ResponcePerson,
+                Driver = SelectedDefect.Driver,
+                AcceptUtoPerson = SelectedDefect.AcceptUtoPerson,
+                AdditionalPerson = SelectedDefect.AdditionalPerson,
+                KmSpeedStart = SelectedDefect.KmSpeedStart,
+                MhSpeedStart = SelectedDefect.MhSpeedStart,
+                KmGeneral = SelectedDefect.KmSpeedStart + (int)(SelectedDefect.MhSpeedStart * 50),
+                Defects = SelectedDefect
+
+            };
+            var saveDialog = new SaveFileDialog
+            {
+                Filter = "Excel files (*.xlsx)|*.xlsx",
+                DefaultExt = "xlsx",
+                FileName = $"Акт_передачи_{Car.Number.Replace("/", "_")}_{DateTime.Now:yyyyMMdd_HHmm}"
+            };
+            
+            if (saveDialog.ShowDialog() == true)
+            {
+                var templatePath = Path.Combine(AppContext.BaseDirectory, "Templates", "Акт_передачи_шаблон.xlsx");
+                _reportService.GenerateTransferAct(data, templatePath, saveDialog.FileName);
+                FileHelper.OpenFile(saveDialog.FileName);
+            }
+        }
+
+        private void OpenTOAct()
+        {
+            if (SelectedDefect == null || Car == null) return;
+
+            var data = new TOAktData
+            {
+                Car = Car,
+                TransferDate = SelectedDefectTO.ActDate,
+                SheffPassService = SelectedDefectTO.SheffPassService,
+                ResponcePerson = SelectedDefectTO.ResponcePerson,
+                Driver = SelectedDefectTO.Driver,
+                KmSpeedometrStart = SelectedDefectTO.KmSpeedometrStart,
+                MhSpeedStart = SelectedDefectTO.MhSpeedStart,
+                DefectsTO = SelectedDefectTO
+            };
+            var saveDialog = new SaveFileDialog
+            {
+                Filter = "Excel files (*.xlsx)|*.xlsx",
+                DefaultExt = "xlsx",
+                FileName = $"Акт_ТО_{Car.Number.Replace("/", "_")}_{DateTime.Now:yyyyMMdd_HHmm}"
+            };
+
+            if (saveDialog.ShowDialog() == true)
+            {
+                var templatePath = Path.Combine(AppContext.BaseDirectory, "Templates", "Акт_передачи_шаблон2.xlsx");
+                _reportService.GenerateTOAct(data, templatePath, saveDialog.FileName);
+                FileHelper.OpenFile(saveDialog.FileName);
+            }
         }
     }
 }

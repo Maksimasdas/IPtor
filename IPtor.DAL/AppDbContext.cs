@@ -31,7 +31,7 @@ namespace IPtor.DAL
                 .HasForeignKey(t => t.CarId) // Внешний ключ — CarId в таблице Tires
                 .OnDelete(DeleteBehavior.Cascade); // При удалении машины — удалить все её шины
 
-            modelBuilder.Entity<Defects>() 
+            modelBuilder.Entity<Defects>()
                 .HasOne(d => d.Car) // У одного акта дефектовки — одна машина
                 .WithMany(c => c.Defects) // У одной машины — много актов дефектовки
                 .HasForeignKey(d => d.CarId) // Внешний ключ — CarId в таблице Defects
@@ -47,7 +47,55 @@ namespace IPtor.DAL
                 .HasOne(r => r.Car)
                 .WithMany(c => c.RepairRequests)
                 .HasForeignKey(r => r.CarId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
+            //дополнительные связи для восстановления актов
+            modelBuilder.Entity<Defects>()
+                .HasOne(d => d.SheffPassService)
+                .WithMany()
+                .HasForeignKey(d => d.SheffPassServiceId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Defects>()
+                .HasOne(d => d.ResponcePerson)
+                .WithMany()
+                .HasForeignKey(d => d.ResponcePersonId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Defects>()
+                .HasOne(d => d.Driver)
+                .WithMany()
+                .HasForeignKey(d => d.DriverId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Defects>()
+                .HasOne(d => d.AcceptUtoPerson)
+                .WithMany()
+                .HasForeignKey(d => d.AcceptUtoPersonId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Defects>()
+                .HasOne(d => d.AdditionalPerson)
+                .WithMany()
+                .HasForeignKey(d => d.AdditionalPersonId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<DefectsTO>()
+                .HasOne(d => d.SheffPassService)
+                .WithMany()
+                .HasForeignKey(d => d.SheffPassServiceId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<DefectsTO>()
+                .HasOne(d => d.ResponcePerson)
+                .WithMany()
+                .HasForeignKey(d => d.ResponcePersonId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<DefectsTO>()
+                .HasOne(d => d.Driver)
+                .WithMany()
+                .HasForeignKey(d => d.DriverId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

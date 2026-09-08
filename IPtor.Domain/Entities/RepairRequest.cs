@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace IPtor.Domain.Entities
+﻿namespace IPtor.Domain.Entities
 {
     public class RepairRequest
     {

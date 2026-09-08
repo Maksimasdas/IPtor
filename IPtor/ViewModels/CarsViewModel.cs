@@ -1,11 +1,8 @@
 ﻿using IPtor.Buisness.Interfaces;
-using IPtor.Buisness.Services;
 using IPtor.Commands;
 using IPtor.Domain.Entities;
 using IPtor.Domain.Enums;
 using IPtor.Views;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
@@ -209,9 +206,9 @@ namespace IPtor.ViewModels
         }
         private void OpenCarDetail()
         {
-            if(SelectedCar == null) return;
+            if (SelectedCar == null) return;
 
-            var detailVM = new CarDetailViewModel(_carService, SelectedCar.CarId);
+            var detailVM = new CarDetailViewModel(_carService, _reportService, SelectedCar.CarId);
             var window = new CarDetailView(detailVM);
             window.ShowDialog();
 
@@ -226,7 +223,7 @@ namespace IPtor.ViewModels
             var window = new TransferActView(actVM);
             window.ShowDialog();
         }
-        
+
         //создание акта тех состояния
         private void OpenTOActWindow()
         {

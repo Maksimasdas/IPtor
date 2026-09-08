@@ -1,9 +1,6 @@
-﻿using IPtor.Buisness.Interfaces;
+﻿using ClosedXML.Excel;
+using IPtor.Buisness.Interfaces;
 using IPtor.Buisness.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using ClosedXML.Excel;
 
 namespace IPtor.Buisness.Services
 {

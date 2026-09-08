@@ -210,7 +210,9 @@
                 HorizontalAlignment="Left" Padding="5" Margin="0,0,0,5" />
 
                     <ListBox Grid.Row="1" ItemsSource="{Binding Defects}"
-                 HorizontalContentAlignment="Stretch">
+                             SelectedItem="{Binding SelectedDefect}"
+                             MouseDoubleClick="DefectsListBox_MouseDoubleClick"
+                             HorizontalContentAlignment="Stretch">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Border Padding="10" Margin="0,0,0,5" Background="#F8F8F8" CornerRadius="4">
@@ -239,7 +241,9 @@
                 HorizontalAlignment="Left" Padding="5" Margin="0,0,0,5" />
 
                     <ListBox Grid.Row="1" ItemsSource="{Binding DefectsTO}"
-                 HorizontalContentAlignment="Stretch">
+                             SelectedItem="{Binding SelectedDefectTO}"
+                             MouseDoubleClick="TOListBox_MouseDoubleClick"
+                             HorizontalContentAlignment="Stretch">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Border Padding="10" Margin="0,0,0,5" Background="#F8F8F8" CornerRadius="4">

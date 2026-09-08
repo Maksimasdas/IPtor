@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace IPtor.Domain.Entities
+﻿namespace IPtor.Domain.Entities
 {
     public class Tire
     {

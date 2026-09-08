@@ -124,8 +124,14 @@ namespace IPtor.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DefectsId"));
 
+                    b.Property<int?>("AcceptUtoPersonId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("ActDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("AdditionalPersonId")
+                        .HasColumnType("int");
 
                     b.Property<string>("BackGear")
                         .HasColumnType("nvarchar(max)");
@@ -141,6 +147,9 @@ namespace IPtor.DAL.Migrations
 
                     b.Property<string>("Conclusion")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("DriverId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Electro")
                         .HasColumnType("nvarchar(max)");
@@ -160,11 +169,23 @@ namespace IPtor.DAL.Migrations
                     b.Property<float?>("FuelAvail")
                         .HasColumnType("real");
 
+                    b.Property<int>("KmSpeedStart")
+                        .HasColumnType("int");
+
                     b.Property<string>("Kpp")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<float>("MhSpeedStart")
+                        .HasColumnType("real");
+
                     b.Property<string>("NumberWheel")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ResponcePersonId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SheffPassServiceId")
+                        .HasColumnType("int");
 
                     b.Property<string>("SpecEq")
                         .HasColumnType("nvarchar(max)");
@@ -177,7 +198,17 @@ namespace IPtor.DAL.Migrations
 
                     b.HasKey("DefectsId");
 
+                    b.HasIndex("AcceptUtoPersonId");
+
+                    b.HasIndex("AdditionalPersonId");
+
                     b.HasIndex("CarId");
+
+                    b.HasIndex("DriverId");
+
+                    b.HasIndex("ResponcePersonId");
+
+                    b.HasIndex("SheffPassServiceId");
 
                     b.ToTable("Defects");
                 });
@@ -226,6 +257,9 @@ namespace IPtor.DAL.Migrations
                     b.Property<string>("Domkrat")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("DriverId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Electro")
                         .HasColumnType("nvarchar(max)");
 
@@ -256,8 +290,14 @@ namespace IPtor.DAL.Migrations
                     b.Property<string>("Kluchi")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("KmSpeedometrStart")
+                        .HasColumnType("int");
+
                     b.Property<string>("Mayak")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("MhSpeedStart")
+                        .HasColumnType("real");
 
                     b.Property<string>("Molotok")
                         .HasColumnType("nvarchar(max)");
@@ -295,11 +335,17 @@ namespace IPtor.DAL.Migrations
                     b.Property<string>("Radio")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ResponcePersonId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Rul")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SHpric")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("SheffPassServiceId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Spec")
                         .HasColumnType("nvarchar(max)");
@@ -317,6 +363,12 @@ namespace IPtor.DAL.Migrations
 
                     b.HasIndex("CarId");
 
+                    b.HasIndex("DriverId");
+
+                    b.HasIndex("ResponcePersonId");
+
+                    b.HasIndex("SheffPassServiceId");
+
                     b.ToTable("DefectsTOs");
                 });
 
@@ -327,6 +379,9 @@ namespace IPtor.DAL.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PersonId"));
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -432,13 +487,48 @@ namespace IPtor.DAL.Migrations
 
             modelBuilder.Entity("IPtor.Domain.Entities.Defects", b =>
                 {
+                    b.HasOne("IPtor.Domain.Entities.Person", "AcceptUtoPerson")
+                        .WithMany()
+                        .HasForeignKey("AcceptUtoPersonId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("IPtor.Domain.Entities.Person", "AdditionalPerson")
+                        .WithMany()
+                        .HasForeignKey("AdditionalPersonId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("IPtor.Domain.Entities.Car", "Car")
                         .WithMany("Defects")
                         .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("IPtor.Domain.Entities.Person", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("IPtor.Domain.Entities.Person", "ResponcePerson")
+                        .WithMany()
+                        .HasForeignKey("ResponcePersonId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("IPtor.Domain.Entities.Person", "SheffPassService")
+                        .WithMany()
+                        .HasForeignKey("SheffPassServiceId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("AcceptUtoPerson");
+
+                    b.Navigation("AdditionalPerson");
+
                     b.Navigation("Car");
+
+                    b.Navigation("Driver");
+
+                    b.Navigation("ResponcePerson");
+
+                    b.Navigation("SheffPassService");
                 });
 
             modelBuilder.Entity("IPtor.Domain.Entities.DefectsTO", b =>
@@ -449,7 +539,28 @@ namespace IPtor.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("IPtor.Domain.Entities.Person", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("IPtor.Domain.Entities.Person", "ResponcePerson")
+                        .WithMany()
+                        .HasForeignKey("ResponcePersonId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("IPtor.Domain.Entities.Person", "SheffPassService")
+                        .WithMany()
+                        .HasForeignKey("SheffPassServiceId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.Navigation("Car");
+
+                    b.Navigation("Driver");
+
+                    b.Navigation("ResponcePerson");
+
+                    b.Navigation("SheffPassService");
                 });
 
             modelBuilder.Entity("IPtor.Domain.Entities.RepairRequest", b =>
@@ -457,7 +568,7 @@ namespace IPtor.DAL.Migrations
                     b.HasOne("IPtor.Domain.Entities.Car", "Car")
                         .WithMany("RepairRequests")
                         .HasForeignKey("CarId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Car");

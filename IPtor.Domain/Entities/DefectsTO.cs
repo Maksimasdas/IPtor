@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace IPtor.Domain.Entities
+﻿namespace IPtor.Domain.Entities
 {
     public class DefectsTO
     {
@@ -24,6 +20,20 @@ namespace IPtor.Domain.Entities
         public string? Other { get; set; }
         //дополнительно создано для истории актов
         public DateTime ActDate { get; set; } = DateTime.Now;
+        //дополнительно создано для восстановления акта
+        // Сотрудники
+        public int? SheffPassServiceId { get; set; }
+        public Person SheffPassService { get; set; }
+
+        public int? ResponcePersonId { get; set; }
+        public Person ResponcePerson { get; set; }
+
+        public int? DriverId { get; set; }
+        public Person Driver { get; set; }
+
+        // Пробег и моточасы
+        public int KmSpeedometrStart { get; set; }
+        public float MhSpeedStart { get; set; }
 
         //укомплектовааность
 

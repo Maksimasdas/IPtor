@@ -100,7 +100,7 @@ namespace IPtor.ViewModels
             }
 
             LoadPersonsCommand = new RelayCommand(async _ => await LoadPersonsAsync());
-            AddPersonCommand = new RelayCommand(async _ => await AddPersonAsync(), __ => !string.IsNullOrWhiteSpace(NewName));
+            AddPersonCommand = new RelayCommand(async _ => await AddPersonAsync(), __ => !string.IsNullOrWhiteSpace(NewName) && !string.IsNullOrWhiteSpace(NewPosition));
             DeletePersonCommand = new RelayCommand(async _ => await DeletePersonAsync(), _ => SelectedPerson != null);
             OpenPersonDetailCommand = new RelayCommand(_ => OpenPersonDetail(), _ => SelectedPerson != null);
             SearchCommand = new RelayCommand(_ => SearchPersons());
@@ -144,7 +144,12 @@ namespace IPtor.ViewModels
             ServiceType service;
             if (string.IsNullOrEmpty(NewService))
             {
-                service = ServiceType.ОМТОиС;
+                //service = ServiceType.ОМТОиС;
+                MessageBox.Show("Необходимо выбрать службу",
+                                "Предупреждение",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Warning);
+                return;
             }
             else
             {
@@ -182,7 +187,8 @@ namespace IPtor.ViewModels
             if(result == MessageBoxResult.Yes)
             {
                 await _personService.DeletePersonAsync(SelectedPerson.PersonId);
-                Persons.Remove(SelectedPerson);
+                //Persons.Remove(SelectedPerson);
+                await LoadPersonsAsync();
             }
 
             //await _personService.DeletePersonAsync(SelectedPerson.PersonId);

@@ -1,7 +1,4 @@
 ﻿using IPtor.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace IPtor.Domain.Entities
 {
@@ -13,5 +10,6 @@ namespace IPtor.Domain.Entities
         public string Position { get; set; }       // Должность
         public string Rank { get; set; }           // Звание
         public string UndPosition { get; set; }    // Сокращённое название должности
+        public bool IsActive { get; set; } = true;
     }
 }

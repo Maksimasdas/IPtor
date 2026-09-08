@@ -10,8 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace IPtor
 {
@@ -106,7 +104,8 @@ namespace IPtor
                 Service = ServiceType.ОМТОиС,
                 Position = "Начальник службы",
                 Rank = "Майор",
-                UndPosition = "Нач. службы"
+                UndPosition = "Нач. службы",
+                IsActive = true
             };
 
             var person2 = new Person
@@ -115,7 +114,8 @@ namespace IPtor
                 Service = ServiceType.ЦВСС,
                 Position = "Инженер",
                 Rank = "Капитан",
-                UndPosition = "Инженер УТО"
+                UndPosition = "Инженер УТО", 
+                IsActive= true
             };
 
             var person3 = new Person
@@ -124,7 +124,8 @@ namespace IPtor
                 Service = ServiceType.ЦВТС,
                 Position = "Старший механик",
                 Rank = "Прапорщик",
-                UndPosition = "Ст. механик"
+                UndPosition = "Ст. механик", 
+                IsActive = true
             };
 
             context.Persons.AddRange(person1, person2, person3);

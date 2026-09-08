@@ -29,5 +29,17 @@ namespace IPtor.Views
         {
             UiHelper.TextBoxGotFocus(sender, e);
         }
+
+        private void DefectsListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (DataContext is CarDetailViewModel vm)
+                vm.OpenDefectActCommand.Execute(null);
+        }
+
+        private void TOListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (DataContext is CarDetailViewModel vm)
+                vm.OpenTOActCommand.Execute(null);
+        }
     }
 }
