@@ -89,6 +89,9 @@ namespace IPtor.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsUnderRepair")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Model")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -100,6 +103,12 @@ namespace IPtor.DAL.Migrations
                     b.Property<string>("Number")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RepairReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RepairStartDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Service")
                         .HasColumnType("int");
@@ -131,6 +140,9 @@ namespace IPtor.DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("AdditionalPersonId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AvarageRepair")
                         .HasColumnType("int");
 
                     b.Property<string>("BackGear")
@@ -169,13 +181,28 @@ namespace IPtor.DAL.Migrations
                     b.Property<float?>("FuelAvail")
                         .HasColumnType("real");
 
+                    b.Property<int>("KapRepair")
+                        .HasColumnType("int");
+
+                    b.Property<int>("KmSpeedKarRepair")
+                        .HasColumnType("int");
+
                     b.Property<int>("KmSpeedStart")
+                        .HasColumnType("int");
+
+                    b.Property<int>("KmSpeedTO")
                         .HasColumnType("int");
 
                     b.Property<string>("Kpp")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<float>("MhSpeedKapRepair")
+                        .HasColumnType("real");
+
                     b.Property<float>("MhSpeedStart")
+                        .HasColumnType("real");
+
+                    b.Property<float>("MhSpeedTO")
                         .HasColumnType("real");
 
                     b.Property<string>("NumberWheel")

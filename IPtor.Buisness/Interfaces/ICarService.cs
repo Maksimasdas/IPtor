@@ -23,5 +23,8 @@ namespace IPtor.Buisness.Interfaces
         Task AddDefectsTOAsync(DefectsTO defectsTO);                       // сохранить историю акта ТО
         Task UpdateBatteryAsync(Battery battery);                          // обновить акб
         Task UpdateTireAsync(Tire tire);                                   // обновить шину
+
+        //добалвено после ПЗ для отображения машин в ремонте
+        Task SetRepairStatusAsync(int carId, bool isUnderRepair, string? reason); // доабвление машин в список "в ремонте"
     }
 }

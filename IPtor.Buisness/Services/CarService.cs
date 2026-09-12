@@ -149,5 +149,17 @@ namespace IPtor.Buisness.Services
                 await _uow.SaveChangesAsync();
             }
         }
+        
+        public async Task SetRepairStatusAsync(int carId, bool isUnderRepair, string? reason)
+        {
+            var car = await _uow.Cars.GetByIdAsync(carId);
+            if(car != null)
+            {
+                car.IsUnderRepair = isUnderRepair;
+                car.RepairReason = isUnderRepair ? reason : null;
+                car.RepairStartDate = isUnderRepair ? DateTime.Now : null;
+                await _uow.SaveChangesAsync();
+            }
+        }
     }
 }

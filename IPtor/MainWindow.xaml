@@ -24,6 +24,9 @@
         <DataTemplate DataType="{x:Type vm:StatisticsViewModel}">
             <views:StatisticsView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:RepairsViewModel}">
+            <views:RepairsView />
+        </DataTemplate>
 
     </Window.Resources>
     <Grid>
@@ -75,6 +78,16 @@
                     Foreground="White"
                     BorderThickness="0"
                     Cursor="Hand" />
+
+            <!-- Кнопка "В ремонте" -->
+            <Button Content="🔧 В ремонте"
+                Command="{Binding ShowRepairsCommand}"
+                Margin="10,5"
+                Padding="10,8"
+                Background="#3E3E42"
+                Foreground="White"
+                BorderThickness="0"
+                Cursor="Hand" />
 
             <!-- кнопка статистики -->
             <Button Content="📊 Статистика"

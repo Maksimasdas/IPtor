@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Акт передачи" 
-        WindowStartupLocation="CenterOwner"
+        WindowStartupLocation="CenterScreen"
         Height="750" Width="500"
         Background="#2D2D30">
     <Window.Resources>

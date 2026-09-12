@@ -18,6 +18,11 @@ namespace IPtor.Domain.Entities
         public int Year { get; set; } // год выпуска
         public string InventoryNumber { get; set; } // инвентарный номер
         public List<RepairRequest> RepairRequests { get; set; }  // List вместо ICollection
+        
+        //добавлено дополнительно после написания ПЗ для отображения машин в реонте
+        public bool IsUnderRepair { get; set; }
+        public string? RepairReason {  get; set; }
+        public DateTime? RepairStartDate { get; set; }
 
         // Навигационные свойства
         public ICollection<Battery> Batteries { get; set; }      // Коллекция АКБ

@@ -71,6 +71,9 @@ namespace IPtor
             //диаграммы регистрация
             services.AddTransient<StatisticsViewModel>();
 
+            //регистрация окна ремонтов
+            services.AddTransient<RepairsViewModel>();
+
             _serviceProvider = services.BuildServiceProvider(); //контейнер заморожен, правила зафиксированы
         }
 

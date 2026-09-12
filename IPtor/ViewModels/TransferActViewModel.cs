@@ -229,6 +229,10 @@ namespace IPtor.ViewModels
             get => _conclusion;
             set => Set(ref _conclusion, value);
         }
+        public bool IsEditMode { get; set; } = false;
+
+        private Defects _existingDefect;
+            
 
         //команды
         public ICommand GenerateCommand { get; }
@@ -248,13 +252,29 @@ namespace IPtor.ViewModels
             GenerateCommand = new RelayCommand(_ => GenerateAct());
             AddPersonCommand = new RelayCommand(_ => OpenAddPersonWindow());
 
-            _ = LoadPersonsAsync();
+            //_ = LoadPersonsAsync();
         }
 
-        private async Task LoadPersonsAsync()
+        public async Task LoadPersonsAsync()
         {
-            var persons = await _personService.GetAllPersonsAsync();
+            var persons = (await _personService.GetAllPersonsAsync()).ToList();
+
+            if (_existingDefect != null)
+            {
+                AddIfNotExists(persons, _existingDefect.SheffPassService);
+                AddIfNotExists(persons, _existingDefect.ResponcePerson);
+                AddIfNotExists(persons, _existingDefect.Driver);
+                AddIfNotExists(persons, _existingDefect.AcceptUtoPerson);
+                AddIfNotExists(persons, _existingDefect.AdditionalPerson);
+            }
+
             Persons = new ObservableCollection<Person>(persons);
+        }
+
+        private void AddIfNotExists(List<Person> list, Person person)
+        {
+            if (person != null && !list.Any(p => p.PersonId == person.PersonId))
+                list.Add(person);
         }
 
         private void OpenAddPersonWindow()
@@ -277,14 +297,6 @@ namespace IPtor.ViewModels
                 return;
             }
 
-            // Нормализация топлива — заменяем запятую на точку
-            //float fuel = 0;
-            //if (!string.IsNullOrWhiteSpace(FuelAvail))
-            //{
-            //    string normalized = FuelAvail.Replace(',', '.');
-            //    float.TryParse(normalized, System.Globalization.NumberStyles.Any,
-            //        System.Globalization.CultureInfo.InvariantCulture, out fuel);
-            //}
             float fuel = NumberParser.ParseFloat(FuelAvail);
             //парсинг дробных чисел которые пришли как стринг
             float mhSpeedStart = NumberParser.ParseFloat(MhSpeedStart);
@@ -303,6 +315,7 @@ namespace IPtor.ViewModels
 
                 KmSpeedStart = KmSpeedStart,
                 MhSpeedStart = mhSpeedStart,
+
                 KmGeneral = KmSpeedStart + (int)(mhSpeedStart * 50),
                 AvarageRepair = AvarageRepair,
                 KapRepair = KapRepair,
@@ -355,11 +368,6 @@ namespace IPtor.ViewModels
 
                 try
                 {
-                    //System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                    //{
-                    //    FileName = saveDialog.FileName,
-                    //    UseShellExecute = true
-                    //});
                     FileHelper.OpenFile(saveDialog.FileName);
                 }
                 catch (Exception ex)
@@ -367,44 +375,100 @@ namespace IPtor.ViewModels
                     MessageBox.Show($"Файл сохранен, но не удалось открыть автоматически: {ex.Message}",
                         "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
-                //сохранение истории акта
-                var defects = new Defects
+                if (!IsEditMode)
                 {
-                    CarId = _car.CarId,
-                    ActDate = DateTime.Now,
+                    //сохранение истории акта
+                    var defects = new Defects
+                    {
+                        CarId = _car.CarId,
+                        ActDate = DateTime.Now,
 
-                    //сотрудники
-                    SheffPassServiceId = SheffPassService?.PersonId,
-                    ResponcePersonId = ResponcePerson?.PersonId,
-                    DriverId = Driver?.PersonId,
-                    AcceptUtoPersonId = AcceptUtoPerson?.PersonId,
-                    AdditionalPersonId = AdditionalPerson?.PersonId,
+                        //сотрудники
+                        SheffPassServiceId = SheffPassService?.PersonId,
+                        ResponcePersonId = ResponcePerson?.PersonId,
+                        DriverId = Driver?.PersonId,
+                        AcceptUtoPersonId = AcceptUtoPerson?.PersonId,
+                        AdditionalPersonId = AdditionalPerson?.PersonId,
 
-                    // Пробег и моточасы
-                    KmSpeedStart = KmSpeedStart,
-                    MhSpeedStart = mhSpeedStart,
-                    
-                    //дефекты
-                    Staff = Staff,
-                    EngineDefect = EngineDefect,
-                    Electro = Electro,
-                    Clutch = Clutch,
-                    Kpp = Kpp,
-                    Steering = Steering,
-                    FrontGear = FrontGear,
-                    BackGear = BackGear,
-                    Frame = Frame,
-                    Body = Body,
-                    SpecEq = SpecEq,
-                    ExternalCond = ExternalCond,
-                    NumberWheel = NumberWheel,
-                    FuelAvail = fuel,
-                    Conclusion = Conclusion
-                };
-                await _carService.AddDefectsAsync(defects);
+                        // Пробег и моточасы
+                        KmSpeedStart = KmSpeedStart,
+                        MhSpeedStart = mhSpeedStart,
+                        //добавлено после ПЗ
+                        KmSpeedKarRepair = KmSpeedKarRepair,
+                        MhSpeedKapRepair = mhSpeedKapRepair,
+                        KmSpeedTO = KmSpeedTO,
+                        MhSpeedTO = mhSpeedTO,
+                        AvarageRepair = AvarageRepair,
+                        KapRepair = KapRepair,
 
+                        //дефекты
+                        Staff = Staff,
+                        EngineDefect = EngineDefect,
+                        Electro = Electro,
+                        Clutch = Clutch,
+                        Kpp = Kpp,
+                        Steering = Steering,
+                        FrontGear = FrontGear,
+                        BackGear = BackGear,
+                        Frame = Frame,
+                        Body = Body,
+                        SpecEq = SpecEq,
+                        ExternalCond = ExternalCond,
+                        NumberWheel = NumberWheel,
+                        FuelAvail = fuel,
+                        Conclusion = Conclusion
+                    };
+                    await _carService.AddDefectsAsync(defects);
+                    // помечаем машину как в ремонте (добавлено после ПЗ)
+                    await _carService.SetRepairStatusAsync(_car.CarId, true, Conclusion);
+                }
                 CloseAction?.Invoke();
             }
+        }
+        //добавлено после ПЗ
+        public void SetExistingDefect(Defects defect)
+        {
+            _existingDefect = defect;
+        }
+        public void ApplyExistingDefect()
+        {
+            if (_existingDefect == null) return;
+
+            // Сотрудники
+            SheffPassService = Persons.FirstOrDefault(p => p.PersonId == _existingDefect.SheffPassServiceId);
+            ResponcePerson = Persons.FirstOrDefault(p => p.PersonId == _existingDefect.ResponcePersonId);
+            Driver = Persons.FirstOrDefault(p => p.PersonId == _existingDefect.DriverId);
+            AcceptUtoPerson = Persons.FirstOrDefault(p => p.PersonId == _existingDefect.AcceptUtoPersonId);
+            AdditionalPerson = Persons.FirstOrDefault(p => p.PersonId == _existingDefect.AdditionalPersonId);
+
+            // Пробег и моточасы
+            KmSpeedStart = _existingDefect.KmSpeedStart;
+            MhSpeedStart = _existingDefect.MhSpeedStart.ToString();
+
+            //добавлено после ПЗ
+            KmSpeedKarRepair = _existingDefect.KmSpeedKarRepair;                      // ← ДОБАВЛЕНО
+            MhSpeedKapRepair = _existingDefect.MhSpeedKapRepair.ToString();           // ← ДОБАВЛЕНО
+            KmSpeedTO = _existingDefect.KmSpeedTO;                                     // ← ДОБАВЛЕНО
+            MhSpeedTO = _existingDefect.MhSpeedTO.ToString();                          // ← ДОБАВЛЕНО
+            AvarageRepair = _existingDefect.AvarageRepair;
+            KapRepair = _existingDefect.KapRepair;
+
+            // Дефекты
+            Staff = _existingDefect.Staff;
+            EngineDefect = _existingDefect.EngineDefect;
+            Electro = _existingDefect.Electro;
+            Clutch = _existingDefect.Clutch;
+            Kpp = _existingDefect.Kpp;
+            Steering = _existingDefect.Steering;
+            FrontGear = _existingDefect.FrontGear;
+            BackGear = _existingDefect.BackGear;
+            Frame = _existingDefect.Frame;
+            Body = _existingDefect.Body;
+            SpecEq = _existingDefect.SpecEq;
+            ExternalCond = _existingDefect.ExternalCond;
+            NumberWheel = _existingDefect.NumberWheel;
+            FuelAvail = _existingDefect.FuelAvail?.ToString();
+            Conclusion = _existingDefect.Conclusion;
         }
     }
 }

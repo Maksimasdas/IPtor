@@ -205,7 +205,7 @@ namespace IPtor.ViewModels
             _ = LoadPersonsAsync();
         }
 
-        private async Task LoadPersonsAsync()
+        public async Task LoadPersonsAsync()
         {
             var persons = await _personService.GetAllPersonsAsync();
             Persons = new ObservableCollection<Person>(persons);

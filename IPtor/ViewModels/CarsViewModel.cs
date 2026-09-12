@@ -74,6 +74,9 @@ namespace IPtor.ViewModels
         public ICommand SearchCommand { get; }
         public ICommand ClearSearchCommand { get; }
 
+        //добавлено после ПЗ
+        public ICommand SetUnderRepairCommand { get; }
+
         // ===== СПИСОК СЛУЖБ ДЛЯ ФИЛЬТРА =====
         public ObservableCollection<string> ServiceTypes { get; }
 
@@ -102,6 +105,9 @@ namespace IPtor.ViewModels
             CreateRepairRequestCommand = new RelayCommand(_ => OpenRepairRequestWindow(), _ => SelectedCar != null);
             SearchCommand = new RelayCommand(_ => ApplyFilters());
             ClearSearchCommand = new RelayCommand(_ => ClearSearch());
+
+            //доабвлено после ПЗ
+            SetUnderRepairCommand = new RelayCommand(_ => SetUnderRepair(), _ => SelectedCar != null);
 
             // При старте сразу загружаем машины
             _ = LoadCarsAsync();
@@ -215,21 +221,25 @@ namespace IPtor.ViewModels
             _ = LoadCarsAsync();//добавил для обновления машин после редактирования
         }
         //создать акт передачи (открывается окно создания акта)
-        private void OpenTransferActWindow()
+        private async void OpenTransferActWindow()
         {
             if (SelectedCar == null) return;
 
             var actVM = new TransferActViewModel(_carService, _personService, _reportService, SelectedCar);
+
+            await actVM.LoadPersonsAsync();
+
             var window = new TransferActView(actVM);
             window.ShowDialog();
         }
 
         //создание акта тех состояния
-        private void OpenTOActWindow()
+        private async void OpenTOActWindow()
         {
             if (SelectedCar == null) return;
 
             var actVM = new TOActViewModel(_personService, _reportService, _carService, SelectedCar);
+            await actVM.LoadPersonsAsync();
             var window = new TOActView(actVM);
             window.ShowDialog();
         }
@@ -243,6 +253,18 @@ namespace IPtor.ViewModels
             var requestVM = new AddRepairRequestViewModel(_repairRequestService, SelectedCar);
             var window = new AddRepairRequestView(requestVM);
             window.ShowDialog();
+        }
+        private void SetUnderRepair()
+        {
+            if (SelectedCar == null) return;
+
+            // Открываем окно ввода причины
+            var window = new SetRepairReasonWindow();
+            if (window.ShowDialog() == true)
+            {
+                _ = _carService.SetRepairStatusAsync(SelectedCar.CarId, true, window.Reason);
+                _ = LoadCarsAsync();
+            }
         }
     }
 }

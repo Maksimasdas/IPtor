@@ -233,6 +233,21 @@ namespace IPtor.ViewModels
                 KmSpeedStart = SelectedDefect.KmSpeedStart,
                 MhSpeedStart = SelectedDefect.MhSpeedStart,
                 KmGeneral = SelectedDefect.KmSpeedStart + (int)(SelectedDefect.MhSpeedStart * 50),
+
+                // Вычисляемые значения (разница)
+                KmSpeedKarRepair = SelectedDefect.KmSpeedStart - SelectedDefect.KmSpeedKarRepair,
+                MhSpeedKapRepair = SelectedDefect.MhSpeedStart - SelectedDefect.MhSpeedKapRepair,
+                KmGeneralKapRepair = (SelectedDefect.KmSpeedStart - SelectedDefect.KmSpeedKarRepair)
+                       + (int)((SelectedDefect.MhSpeedStart - SelectedDefect.MhSpeedKapRepair) * 50),
+
+                KmSpeedTO = SelectedDefect.KmSpeedStart - SelectedDefect.KmSpeedTO,
+                MhSpeedTO = SelectedDefect.MhSpeedStart - SelectedDefect.MhSpeedTO,
+                KmGeneralTO = (SelectedDefect.KmSpeedStart - SelectedDefect.KmSpeedTO)
+                + (int)((SelectedDefect.MhSpeedStart - SelectedDefect.MhSpeedTO) * 50),
+
+                AvarageRepair = SelectedDefect.AvarageRepair,
+                KapRepair = SelectedDefect.KapRepair,
+
                 Defects = SelectedDefect
 
             };

@@ -40,6 +40,17 @@
         public int KmSpeedStart { get; set; }
         public float MhSpeedStart { get; set; }
 
+        //добавлено после ПЗ
+
+        // Пробег при последнем ремонте
+        public int KmSpeedKarRepair { get; set; }
+        public float MhSpeedKapRepair { get; set; }
+        // Пробег при последнем ТО-2
+        public int KmSpeedTO { get; set; }
+        public float MhSpeedTO { get; set; }
+        public int AvarageRepair { get; set; }
+        public int KapRepair { get; set; }
+
         //навигационное свойство
         public int CarId { get; set; }
         public Car Car { get; set; }
