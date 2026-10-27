@@ -268,7 +268,7 @@ namespace IPtor.ViewModels
 
         private void OpenTOAct()
         {
-            if (SelectedDefect == null || Car == null) return;
+            if (SelectedDefectTO == null || Car == null) return;
 
             var data = new TOAktData
             {

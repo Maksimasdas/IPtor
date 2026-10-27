@@ -250,9 +250,23 @@
                                     <StackPanel>
                                         <TextBlock Text="{Binding ActDate, StringFormat='{}{0:dd.MM.yyyy}'}" 
                                        FontSize="10" Foreground="#999" />
-                                        <TextBlock Text="{Binding Zakl}" FontWeight="Bold" FontSize="13" Margin="0,3,0,0" />
-                                        <TextBlock Text="{Binding Pred}" Foreground="#666" FontSize="11" Margin="0,3,0,0" />
-                                        <TextBlock Text="{Binding GeneralView}" FontSize="11" Foreground="#999" Margin="0,3,0,0" />
+                                        <TextBlock FontWeight="Bold" FontSize="13" Margin="0,3,0,0">
+                                        <Run Text="Заключение: " />
+                                        <Run Text="{Binding Zakl}" />
+                                        </TextBlock>
+
+                                        <TextBlock Foreground="#666" FontSize="11" Margin="0,3,0,0">
+                                        <Run Text="Предложения: " />
+                                        <Run Text="{Binding Pred}" />
+                                        </TextBlock>
+
+                                        <!--<TextBlock FontSize="11" Foreground="#999" Margin="0,3,0,0">
+                                        <Run Text="Внешний вид: " />
+                                        <Run Text="{Binding GeneralView}" />
+                                        </TextBlock>-->
+                                        <!--<TextBlock Text="{Binding Zakl}" FontWeight="Bold" FontSize="13" Margin="0,3,0,0" />-->
+                                        <!--<TextBlock Text="{Binding Pred}" Foreground="#666" FontSize="11" Margin="0,3,0,0" />
+                                        <TextBlock Text="{Binding GeneralView}" FontSize="11" Foreground="#999" Margin="0,3,0,0" />-->
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>

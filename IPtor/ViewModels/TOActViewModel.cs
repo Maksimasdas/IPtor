@@ -202,7 +202,7 @@ namespace IPtor.ViewModels
             GenerateCommand = new RelayCommand(_ => GenerateAct());
             AddPersonCommand = new RelayCommand(_ => OpenAddPersonWindow());
 
-            _ = LoadPersonsAsync();
+            //_ = LoadPersonsAsync();
         }
 
         public async Task LoadPersonsAsync()
@@ -228,13 +228,6 @@ namespace IPtor.ViewModels
                 return;
             }
 
-            //float fuel = 0;
-            //if (!string.IsNullOrWhiteSpace(Fuel))
-            //{
-            //    string normalized = Fuel.Replace(',', '.');
-            //    float.TryParse(normalized, System.Globalization.NumberStyles.Any,
-            //        System.Globalization.CultureInfo.InvariantCulture, out fuel);
-            //}
             float fuel = NumberParser.ParseFloat(Fuel);
             int kmSpeedStart = NumberParser.ParseInt(KmSpeedometrStart);
             float mhSpeedStart = NumberParser.ParseFloat(MhSpeedStart);

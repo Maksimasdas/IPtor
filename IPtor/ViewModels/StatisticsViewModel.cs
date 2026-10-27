@@ -32,6 +32,14 @@ namespace IPtor.ViewModels
             set => Set(ref _yearSeries, value);
         }
 
+        //добавлено после ПЗ
+        private ObservableCollection<ISeries> _repairSeries;
+        public ObservableCollection<ISeries> RepairSeries
+        {
+            get => _repairSeries;
+            set => Set(ref _repairSeries, value);
+        }
+
         private Axis[] _xAxes;
         public Axis[] XAxes //ось X
         {
@@ -46,6 +54,19 @@ namespace IPtor.ViewModels
             set => Set(ref _yAxes, value);
         }
 
+        //добавлено после ПЗ
+        private Axis[] _repairXAxes;
+        public Axis[] RepairXAxes
+        {
+            get => _repairXAxes;
+            set => Set(ref _repairXAxes, value);
+        }
+        private Axis[] _repairYAxes;
+        public Axis[] RepairYAxes
+        {
+            get => _repairYAxes;
+            set => Set(ref _repairYAxes, value);
+        }
         public StatisticsViewModel(ICarService carService)
         {
             _carService = carService;
@@ -107,6 +128,54 @@ namespace IPtor.ViewModels
                     }
                 };
             });
+
+            // График машин в ремонте (по дням)
+            var carsInRepair = cars
+                .Where(c => c.IsUnderRepair && c.RepairStartDate.HasValue)
+                .Select(c => new
+                {
+                    Name = $"{c.Name} {c.Number}",
+                    Days = (DateTime.Now - c.RepairStartDate.Value).TotalDays
+                })
+                .OrderByDescending(c => c.Days)
+                .ToList();
+
+            var repairValues = new RowSeries<double>
+            {
+                Values = carsInRepair.Select(c => Math.Round(c.Days, 1)).ToArray(),
+                Name = "Дней в ремонте",
+                DataLabelsSize = 12,
+                DataLabelsPosition = LiveChartsCore.Measure.DataLabelsPosition.End,
+                DataLabelsPaint = new SolidColorPaint(SKColors.Black),
+
+                // Кастомный tooltip
+                //XToolTipLabelFormatter = point =>
+                //{
+                //    int index = (int)point.Coordinate.SecondaryValue;
+                //    var carName = carsInRepair.ElementAtOrDefault(index)?.Name ?? "—";
+                //    return $"{carName}\n{"".PadLeft(carName.Length / 2)}{point.Coordinate.PrimaryValue:F1} дн.";
+                //}
+            };
+
+            RepairSeries = new ObservableCollection<ISeries> { repairValues };
+
+            RepairYAxes = new Axis[]
+            {
+                new Axis
+                {
+                    Labels = carsInRepair.Select(c => c.Name).ToArray(),
+                    TextSize = 11
+                }
+                        };
+
+                        RepairXAxes = new Axis[]
+                        {
+                new Axis
+                {
+                    MinLimit = 0,
+                    Labeler = value => value.ToString("0.#") + " дн."
+                }
+                        };
 
         }
     }   

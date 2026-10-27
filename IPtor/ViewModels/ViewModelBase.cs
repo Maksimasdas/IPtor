@@ -27,7 +27,7 @@ namespace IPtor.ViewModels
 
             field = value;
             OnPropertyChanged(propertyName);  // Сообщаем View: "я изменился, обновись!"
-            return true;
+            return true;    
         }
     }
 }

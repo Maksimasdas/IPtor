@@ -1,4 +1,5 @@
 ﻿using IPtor.ViewModels;
+using LiveChartsCore.Measure;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -23,12 +24,16 @@ namespace IPtor.Views
         {
             InitializeComponent();
         }
-        private void UserControl_Loaded(object sender, RoutedEventArgs e) //событие которое срабатывает при загрузке ЮК и запускает загрузку данныхх к нему
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            //отключаем тултип для графика ибо он лагучий я запарился
+            RepairChart.TooltipPosition = LiveChartsCore.Measure.TooltipPosition.Hidden;
+
             if (DataContext is StatisticsViewModel vm)
             {
                 vm.LoadDataCommand.Execute(null);
             }
         }
+
     }
 }

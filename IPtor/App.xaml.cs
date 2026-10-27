@@ -77,21 +77,37 @@ namespace IPtor
             _serviceProvider = services.BuildServiceProvider(); //контейнер заморожен, правила зафиксированы
         }
 
-        protected override void OnStartup(StartupEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            using (var scope = _serviceProvider.CreateScope())
+            // 1. Показываем окно загрузки
+            var splash = new SplashWindow();
+            splash.Show();
+
+            // 2. Тяжёлая работа — в фоне
+            await Task.Run(() =>
             {
-                var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-                // Автоматически применить миграции и создать БД если её нет
-                context.Database.Migrate();
+                    // Обновляем текст через Dispatcher (из фонового потока)
+                    splash.Dispatcher.BeginInvoke(new Action(() => splash.UpdateStatus("Подключение к базе данных...")));
+                    context.Database.Migrate();
 
-                SeedData(context);
-            }
+                    splash.Dispatcher.Invoke(() => splash.UpdateStatus("Проверка данных..."));
+                    SeedData(context);
+                }
+            });
+
+            // 3. Создаём главное окно (тоже в фоне)
+            splash.Dispatcher.Invoke(() => splash.UpdateStatus("Загрузка интерфейса..."));
 
             var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+
+            // 4. Закрываем splash, показываем главное окно
+            splash.Close();
             mainWindow.Show();
         }
 

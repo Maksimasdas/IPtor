@@ -23,6 +23,15 @@
                                     LegendPosition="Bottom"
                                     Height="300" />
             </GroupBox>
+            <!-- Row Chart: машины в ремонте -->
+            <GroupBox Header="Машины в ремонте (дней)" Padding="10" Margin="0,15,0,0">
+                <lvc:CartesianChart x:Name="RepairChart"
+                                    Series="{Binding RepairSeries}"
+                                    XAxes="{Binding RepairXAxes}"
+                                    YAxes="{Binding RepairYAxes}"
+                                    Height="Auto"
+                                    MinHeight="300" />
+            </GroupBox>
         </StackPanel>
     </ScrollViewer>
 </UserControl>
