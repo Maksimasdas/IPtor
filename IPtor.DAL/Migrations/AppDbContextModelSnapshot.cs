@@ -399,6 +399,64 @@ namespace IPtor.DAL.Migrations
                     b.ToTable("DefectsTOs");
                 });
 
+            modelBuilder.Entity("IPtor.Domain.Entities.Equipment", b =>
+                {
+                    b.Property<int>("EquipmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EquipmentId"));
+
+                    b.Property<decimal?>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("BoxNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ClassName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CountryOfOrigin")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Formular")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("FormularDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("InventoryNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SerialNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Service")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TNVEDCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float?>("Weight")
+                        .HasColumnType("real");
+
+                    b.Property<int?>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("EquipmentId");
+
+                    b.ToTable("Equipment");
+                });
+
             modelBuilder.Entity("IPtor.Domain.Entities.Person", b =>
                 {
                     b.Property<int>("PersonId")

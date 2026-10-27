@@ -12,6 +12,8 @@ namespace IPtor.DAL
         public DbSet<DefectsTO> DefectsTOs { get; set; }
         public DbSet<Person> Persons { get; set; }
         public DbSet<RepairRequest> RepairRequests { get; set; } // добавлено после
+        public DbSet<Equipment> Equipment { get; set; } //оборудование добавлено 27.10.2026
+
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
