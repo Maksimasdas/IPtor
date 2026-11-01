@@ -24,10 +24,12 @@ namespace IPtor.ViewModels
         public ICommand ShowRepairRequestsCommand { get; }
         public ICommand ShowStatisticsCommand { get; }
         public ICommand ShowRepairsCommand { get; }
+        public ICommand ShowEquipmentCommand { get; }
 
         // ===== КОНСТРУКТОР =====
         // Все дочерние ViewModel внедряются через DI
-        public MainViewModel(CarsViewModel carsViewModel, PersonsViewModel personsViewModel, RepairRequestsViewModel repairRequestsViewModel, StatisticsViewModel statisticsViewModel, RepairsViewModel repairsViewModel)
+        public MainViewModel(CarsViewModel carsViewModel, PersonsViewModel personsViewModel, RepairRequestsViewModel repairRequestsViewModel, 
+            StatisticsViewModel statisticsViewModel, RepairsViewModel repairsViewModel, EquipmentViewModel equipmentViewModel)
         {
             // При старте показываем список машин
             CurrentView = carsViewModel;
@@ -55,6 +57,12 @@ namespace IPtor.ViewModels
             {
                 CurrentView = repairsViewModel;
                 _ = repairsViewModel.LoadRepairsAsync();
+            });
+
+            ShowEquipmentCommand = new RelayCommand(_ =>
+            {
+                CurrentView = equipmentViewModel;
+                equipmentViewModel.LoadEquipmentCommand.Execute(null);
             });
         }
     }

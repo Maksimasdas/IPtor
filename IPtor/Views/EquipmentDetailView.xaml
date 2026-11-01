@@ -1,0 +1,79 @@
+﻿<Window x:Class="IPtor.Views.EquipmentDetailView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Информация об оборудовании" 
+        Height="600" Width="500"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <Style TargetType="TextBox">
+            <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ScrollViewer Grid.Row="0">
+            <StackPanel>
+                <TextBlock Text="Наименование" FontWeight="Bold" />
+                <TextBox Text="{Binding Equipment.Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
+
+                <TextBlock Text="Модель" FontWeight="Bold" />
+                <TextBox Text="{Binding Equipment.Model, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
+
+                <TextBlock Text="Серийный номер" FontWeight="Bold" />
+                <TextBox Text="{Binding Equipment.SerialNumber, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
+
+                <TextBlock Text="Класс (бензорез, бензопила)" FontWeight="Bold" />
+                <TextBox Text="{Binding Equipment.ClassName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
+
+                <TextBlock Text="Служба" FontWeight="Bold" />
+                <ComboBox ItemsSource="{Binding ServiceTypes}"
+                          SelectedItem="{Binding Equipment.Service}"
+                          Margin="0,0,0,10" />
+
+                <TextBlock Text="Номер формуляра" FontWeight="Bold" />
+                <TextBox Text="{Binding Equipment.Formular, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
+
+                <TextBlock Text="Дата формуляра" FontWeight="Bold" />
+                <DatePicker SelectedDate="{Binding Equipment.FormularDate}" Margin="0,0,0,10" />
+
+                <TextBlock Text="Год выпуска" FontWeight="Bold" />
+                <TextBox Text="{Binding Equipment.Year, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
+
+                <TextBlock Text="Инвентарный номер" FontWeight="Bold" />
+                <TextBox Text="{Binding Equipment.InventoryNumber, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
+
+                <TextBlock Text="Номер ящика" FontWeight="Bold" />
+                <TextBox Text="{Binding Equipment.BoxNumber, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
+
+                <TextBlock Text="Стоимость" FontWeight="Bold" />
+                <TextBox Text="{Binding Equipment.Amount, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
+
+                <TextBlock Text="Страна происхождения" FontWeight="Bold" />
+                <TextBox Text="{Binding Equipment.CountryOfOrigin, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
+
+                <TextBlock Text="Вес брутто" FontWeight="Bold" />
+                <TextBox Text="{Binding Equipment.Weight, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
+
+                <TextBlock Text="Код ТН ВЭД" FontWeight="Bold" />
+                <TextBox Text="{Binding Equipment.TNVEDCode, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <Button Grid.Row="1"
+                Content="💾 Сохранить"
+                Command="{Binding SaveCommand}"
+                Padding="15,8"
+                Margin="0,10,0,0"
+                HorizontalAlignment="Right"
+                Background="#4CAF50"
+                Foreground="White"
+                BorderThickness="0"
+                Cursor="Hand" />
+    </Grid>
+</Window>

@@ -27,6 +27,9 @@
         <DataTemplate DataType="{x:Type vm:RepairsViewModel}">
             <views:RepairsView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:EquipmentViewModel}">
+            <views:EquipmentView />
+        </DataTemplate>
 
     </Window.Resources>
     <Grid>
@@ -89,6 +92,16 @@
                 BorderThickness="0"
                 Cursor="Hand" />
 
+            <!-- кнопка оборудование -->
+            <Button Content="🧰 Оборудование"
+                Command="{Binding ShowEquipmentCommand}"
+                Margin="10,5"
+                Padding="10,8"
+                Background="#3E3E42"
+                Foreground="White"
+                BorderThickness="0"
+                Cursor="Hand" />
+
             <!-- кнопка статистики -->
             <Button Content="📊 Статистика"
                 Command="{Binding ShowStatisticsCommand}"
@@ -98,7 +111,7 @@
                 Foreground="White"
                 BorderThickness="0"
                 Cursor="Hand" />
-            
+
         </StackPanel>
 
         <!-- Правая часть — контент (меняется через привязку) -->

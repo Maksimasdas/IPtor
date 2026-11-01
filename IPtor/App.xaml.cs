@@ -74,6 +74,11 @@ namespace IPtor
             //регистрация окна ремонтов
             services.AddTransient<RepairsViewModel>();
 
+            //оборудование
+            services.AddScoped<IEquipmentService, EquipmentService>();
+            services.AddTransient<EquipmentViewModel>();
+            services.AddTransient<EquipmentDetailViewModel>();
+
             _serviceProvider = services.BuildServiceProvider(); //контейнер заморожен, правила зафиксированы
         }
 

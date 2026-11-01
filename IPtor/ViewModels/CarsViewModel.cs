@@ -6,6 +6,7 @@ using IPtor.Views;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
+using IPtor.Helpers;
 
 namespace IPtor.ViewModels
 {
@@ -89,11 +90,13 @@ namespace IPtor.ViewModels
             _reportService = reportService;
             _repairRequestService = repairRequestService;
 
-            ServiceTypes = new ObservableCollection<string> { "Все службы" };
-            foreach (var service in System.Enum.GetValues(typeof(ServiceType)).Cast<ServiceType>())
-            {
-                ServiceTypes.Add(service.ToString());
-            }
+            //ServiceTypes = new ObservableCollection<string> { "Все службы" };
+            //foreach (var service in System.Enum.GetValues(typeof(ServiceType)).Cast<ServiceType>())
+            //{
+            //    ServiceTypes.Add(service.ToString());
+            //}
+
+            ServiceTypes = new ObservableCollection<string>(EnumHelper.GetServiceTypesWithAll());
 
             // Привязываем команды к методам
             LoadCarsCommand = new RelayCommand(async _ => await LoadCarsAsync());
@@ -168,10 +171,12 @@ namespace IPtor.ViewModels
             IEnumerable<Car> filtered = _allCars;
 
             // Фильтр по службе
-            if (SelectedServiceFilter != "Все службы")
+            if (!string.IsNullOrEmpty(SelectedServiceFilter) && SelectedServiceFilter != "Все службы")
             {
-                var service = (ServiceType)System.Enum.Parse(typeof(ServiceType), SelectedServiceFilter);
-                filtered = filtered.Where(c => c.Service == service);
+                if (Enum.TryParse<ServiceType>(SelectedServiceFilter, out var service))
+                {
+                    filtered = filtered.Where(c => c.Service == service);
+                }
             }
 
             // Фильтр по номеру
