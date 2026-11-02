@@ -28,7 +28,7 @@
                 <TextBlock Text="Серийный номер" FontWeight="Bold" />
                 <TextBox Text="{Binding Equipment.SerialNumber, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
 
-                <TextBlock Text="Класс (бензорез, бензопила)" FontWeight="Bold" />
+                <TextBlock Text="Класс (бензорез, бензопила и тд.)" FontWeight="Bold" />
                 <TextBox Text="{Binding Equipment.ClassName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
 
                 <TextBlock Text="Служба" FontWeight="Bold" />
@@ -54,8 +54,8 @@
                 <TextBlock Text="Стоимость" FontWeight="Bold" />
                 <TextBox Text="{Binding Equipment.Amount, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
 
-                <TextBlock Text="Страна происхождения" FontWeight="Bold" />
-                <TextBox Text="{Binding Equipment.CountryOfOrigin, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
+                <TextBlock Text="Страна происхождения (в сокращенной форме)" FontWeight="Bold" />
+                <TextBox Text="{Binding Equipment.CountryOfOrigin, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" ToolTip="RB, RU, GE, USA..."/>
 
                 <TextBlock Text="Вес брутто" FontWeight="Bold" />
                 <TextBox Text="{Binding Equipment.Weight, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" />
