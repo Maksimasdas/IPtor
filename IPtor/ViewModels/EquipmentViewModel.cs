@@ -119,11 +119,6 @@ namespace IPtor.ViewModels
         public EquipmentViewModel(IEquipmentService equipmentService)
         {
             _equipmentService = equipmentService;
-            //ServiceTypes = new ObservableCollection<string> { "Все службы" };
-            //foreach (var service in Enum.GetValues(typeof(ServiceType)).Cast<ServiceType>())
-            //{
-            //    ServiceTypes.Add(service.ToString());
-            //}
 
             ServiceTypes = new ObservableCollection<string>(EnumHelper.GetServiceTypesWithAll());
 

@@ -101,9 +101,21 @@ namespace IPtor.ViewModels
 
         public async Task LoadRepairsAsync()
         {
-            var cars = await _carService.GetCarsWithDetailsAsync();
-            _allRepairs = cars.Where(c => c.IsUnderRepair).ToList();
-            Repairs = new ObservableCollection<Car>(_allRepairs);
+            try
+            {
+                var cars = await _carService.GetCarsWithDetailsAsync();
+                _allRepairs = cars.Where(c => c.IsUnderRepair).ToList();
+                Repairs = new ObservableCollection<Car>(_allRepairs);
+            }
+            catch (Exception ex)
+            {
+                // логирование + сообщение пользователю
+                MessageBox.Show($"Не удалось загрузить список машин в ремонте:\n{ex.Message}",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                // не оставляем пустое/старое состояние молча — хотя бы пустая коллекция
+                Repairs ??= new ObservableCollection<Car>();
+            }
         }
     }
 }

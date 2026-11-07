@@ -6,10 +6,34 @@
         xmlns:local="clr-namespace:IPtor"
         xmlns:views="clr-namespace:IPtor.Views"
         xmlns:vm="clr-namespace:IPtor.ViewModels"
+        xmlns:helpers="clr-namespace:IPtor.Helpers"
         mc:Ignorable="d"
         Title="IPtor - Учёт автотранспорта" Height="600" Width="900"
         WindowStartupLocation="CenterScreen"
         Icon="/Images/PriemOchka1.ico">
+
+    <Window.InputBindings>
+        <KeyBinding Key="D1" Modifiers="Ctrl"
+                Command="{Binding NavigateCommand}"
+                CommandParameter="{x:Static helpers:NavigationTarget.Cars}" />
+        <KeyBinding Key="D2" Modifiers="Ctrl"
+                Command="{Binding NavigateCommand}"
+                CommandParameter="{x:Static helpers:NavigationTarget.Persons}" />
+        <KeyBinding Key="D3" Modifiers="Ctrl"
+                Command="{Binding NavigateCommand}"
+                CommandParameter="{x:Static helpers:NavigationTarget.RepairRequests}" />
+        <KeyBinding Key="D4" Modifiers="Ctrl"
+                Command="{Binding NavigateCommand}"
+                CommandParameter="{x:Static helpers:NavigationTarget.Repairs}" />
+        <KeyBinding Key="D5" Modifiers="Ctrl"
+                Command="{Binding NavigateCommand}"
+                CommandParameter="{x:Static helpers:NavigationTarget.Equipment}" />
+        <KeyBinding Key="D6" Modifiers="Ctrl"
+                Command="{Binding NavigateCommand}"
+                CommandParameter="{x:Static helpers:NavigationTarget.Statistics}" />
+    </Window.InputBindings>
+
+
     <Window.Resources> 
         <!-- Когда CurrentView = CarsViewModel -> показать CarsView и т.д. -->
         <DataTemplate DataType="{x:Type vm:CarsViewModel}">

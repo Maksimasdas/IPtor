@@ -1,10 +1,21 @@
 ﻿using IPtor.Commands;
+using IPtor.Helpers;
 using System.Windows.Input;
 
 namespace IPtor.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
+
+        // ===== ССЫЛКИ НА ДОЧЕРНИЕ VIEWMODEL =====
+        // Нужны, чтобы Navigate() мог обращаться к ним из любого места
+        private readonly CarsViewModel _carsViewModel;
+        private readonly PersonsViewModel _personsViewModel;
+        private readonly RepairRequestsViewModel _repairRequestsViewModel;
+        private readonly StatisticsViewModel _statisticsViewModel;
+        private readonly RepairsViewModel _repairsViewModel;
+        private readonly EquipmentViewModel _equipmentViewModel;
+
         // ===== ТЕКУЩАЯ АКТИВНАЯ ВКЛАДКА =====
         // Хранит ViewModel той вкладки, которая сейчас открыта
         // View будет привязан к этому свойству и показывать соответствующее содержимое
@@ -26,49 +37,73 @@ namespace IPtor.ViewModels
         public ICommand ShowRepairsCommand { get; }
         public ICommand ShowEquipmentCommand { get; }
 
+        // ===== УНИВЕРСАЛЬНАЯ КОМАНДА (клавиатура) =====
+        public ICommand NavigateCommand { get; }
+
         // ===== КОНСТРУКТОР =====
         // Все дочерние ViewModel внедряются через DI
         public MainViewModel(CarsViewModel carsViewModel, PersonsViewModel personsViewModel, RepairRequestsViewModel repairRequestsViewModel, 
             StatisticsViewModel statisticsViewModel, RepairsViewModel repairsViewModel, EquipmentViewModel equipmentViewModel)
         {
+            _carsViewModel = carsViewModel;
+            _personsViewModel = personsViewModel;
+            _repairRequestsViewModel = repairRequestsViewModel;
+            _statisticsViewModel = statisticsViewModel;
+            _repairsViewModel = repairsViewModel;
+            _equipmentViewModel = equipmentViewModel;
             // При старте показываем список машин
             CurrentView = carsViewModel;
 
-            // Команда: переключиться на список машин
-            ShowCarsCommand = new RelayCommand(_ =>
-            {
-                CurrentView = carsViewModel;
-                carsViewModel.LoadCarsCommand.Execute(null);
-            });
-            ShowPersonsCommand = new RelayCommand(_ =>
-            {
-                CurrentView = personsViewModel;
-                personsViewModel.LoadPersonsCommand.Execute(null);
-            });
-            //для теста гитхаба 
-            // тест для гитхаба 2
-            // Команда: переключиться на заявки
-            ShowRepairRequestsCommand = new RelayCommand(_ =>
-            {
-                CurrentView = repairRequestsViewModel;
-                repairRequestsViewModel.LoadRequestsCommand.Execute(null);
-            });
+            // Команда: переключиться на список машин (теперь делегируют в Navigate)
+            ShowCarsCommand = new RelayCommand(_ => Navigate(NavigationTarget.Cars));
+            ShowPersonsCommand = new RelayCommand(_ => Navigate(NavigationTarget.Persons));
+            ShowRepairRequestsCommand = new RelayCommand(_ => Navigate(NavigationTarget.RepairRequests));
+            ShowStatisticsCommand = new RelayCommand(_ => Navigate(NavigationTarget.Statistics));
+            ShowRepairsCommand = new RelayCommand(_ => Navigate(NavigationTarget.Repairs));
+            ShowEquipmentCommand = new RelayCommand(_ => Navigate(NavigationTarget.Equipment));
 
-            //команда для статистики
-            ShowStatisticsCommand = new RelayCommand(_ => CurrentView = statisticsViewModel);
-
-            //добавлено после ПЗ
-            ShowRepairsCommand = new RelayCommand(_ =>
+            // Универсальная команда для Ctrl+1…6
+            NavigateCommand = new RelayCommand(param =>
             {
-                CurrentView = repairsViewModel;
-                _ = repairsViewModel.LoadRepairsAsync();
+                if (param is NavigationTarget target)
+                    Navigate(target);
             });
+        }
 
-            ShowEquipmentCommand = new RelayCommand(_ =>
+        // ===== ЕДИНАЯ ТОЧКА ПЕРЕХОДА =====
+        private void Navigate(NavigationTarget target)
+        {
+            switch (target)
             {
-                CurrentView = equipmentViewModel;
-                equipmentViewModel.LoadEquipmentCommand.Execute(null);
-            });
+                case NavigationTarget.Cars:
+                    CurrentView = _carsViewModel;
+                    _carsViewModel.LoadCarsCommand.Execute(null);
+                    break;
+
+                case NavigationTarget.Persons:
+                    CurrentView = _personsViewModel;
+                    _personsViewModel.LoadPersonsCommand.Execute(null);
+                    break;
+
+                case NavigationTarget.RepairRequests:
+                    CurrentView = _repairRequestsViewModel;
+                    _repairRequestsViewModel.LoadRequestsCommand.Execute(null);
+                    break;
+
+                case NavigationTarget.Repairs:
+                    CurrentView = _repairsViewModel;
+                    _ = _repairsViewModel.LoadRepairsAsync();
+                    break;
+
+                case NavigationTarget.Equipment:
+                    CurrentView = _equipmentViewModel;
+                    _equipmentViewModel.LoadEquipmentCommand.Execute(null);
+                    break;
+
+                case NavigationTarget.Statistics:
+                    CurrentView = _statisticsViewModel;
+                    break;
+            }
         }
     }
 }
