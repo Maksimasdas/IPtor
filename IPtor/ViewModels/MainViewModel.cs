@@ -35,7 +35,11 @@ namespace IPtor.ViewModels
             CurrentView = carsViewModel;
 
             // Команда: переключиться на список машин
-            ShowCarsCommand = new RelayCommand(_ => CurrentView = carsViewModel);
+            ShowCarsCommand = new RelayCommand(_ =>
+            {
+                CurrentView = carsViewModel;
+                carsViewModel.LoadCarsCommand.Execute(null);
+            });
             ShowPersonsCommand = new RelayCommand(_ =>
             {
                 CurrentView = personsViewModel;

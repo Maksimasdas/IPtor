@@ -10,6 +10,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
+using Microsoft.Win32;           // для SystemEvents (события Windows)
+using System.Threading.Tasks;    // для Task
+using System;                    // для Action
 
 namespace IPtor
 {
@@ -80,6 +83,58 @@ namespace IPtor
             services.AddTransient<EquipmentDetailViewModel>();
 
             _serviceProvider = services.BuildServiceProvider(); //контейнер заморожен, правила зафиксированы
+
+            //перехват ошибок
+            // 1. Ошибки в UI-потоке (кнопки, привязки, загрузка)
+            this.DispatcherUnhandledException += (s, e) =>
+            {
+                MessageBox.Show($"Произошла ошибка интерфейса:\n{e.Exception.Message}",
+            "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                e.Handled = true; // Программа НЕ падает
+            };
+
+            // 2. Ошибки в фоновых задачах (Task.Run, async void)
+            TaskScheduler.UnobservedTaskException += (s, e) =>
+            {
+                MessageBox.Show($"Ошибка в фоне:\n{e.Exception.InnerException?.Message ?? e.Exception.Message}",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                e.SetObserved(); // Помечаем, что мы её обработали
+            };
+
+            // 3. Ошибки в работе с базой данных (сохранения)
+            AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+            {
+                if (e.ExceptionObject is Exception ex)
+                {
+                    MessageBox.Show($"Критическая ошибка:\n{ex.Message}",
+                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            };
+
+            // Следим за переходом в сон и пробуждением
+            SystemEvents.PowerModeChanged += OnPowerModeChanged;
+        }
+
+        private void OnPowerModeChanged(object sender, PowerModeChangedEventArgs e)
+        {
+            if(e.Mode == PowerModes.Resume)
+            {
+                //проснулись, соединение с БД могло отвалиться
+                //принудительно обновляем майнвиндов что бы сбросить кэш
+                System.Diagnostics.Debug.WriteLine("=== Компьютер проснулся, обновляем данные===");
+
+
+                //сообщение что бы пользователь обновил интерфейс
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    if (Application.Current.MainWindow?.DataContext is MainViewModel mainVM)
+                    {
+                        // Сообщаем пользователю, что нужно обновить данные
+                        MessageBox.Show("Соединение с базой данных обновлено. Нажмите «Обновить» на вкладке.",
+                            "Восстановление", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                });
+            }
         }
 
         protected override async void OnStartup(StartupEventArgs e)
@@ -97,8 +152,8 @@ namespace IPtor
                 {
                     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-                    // Обновляем текст через Dispatcher (из фонового потока)
-                    splash.Dispatcher.BeginInvoke(new Action(() => splash.UpdateStatus("Подключение к базе данных...")));
+                    //обновляем текст через диспетчер из фонового потока
+                    splash.Dispatcher.Invoke(() => splash.UpdateStatus("Подключение к базе данных..."));
                     context.Database.Migrate();
 
                     splash.Dispatcher.Invoke(() => splash.UpdateStatus("Проверка данных..."));
@@ -108,7 +163,6 @@ namespace IPtor
 
             // 3. Создаём главное окно (тоже в фоне)
             splash.Dispatcher.Invoke(() => splash.UpdateStatus("Загрузка интерфейса..."));
-
             var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
 
             // 4. Закрываем splash, показываем главное окно

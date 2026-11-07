@@ -17,6 +17,7 @@ namespace IPtor.ViewModels
     {
         private readonly IPersonService _personService;
         private List<Person> _allPersons;
+        //public Action CloseAction { get; set; }
 
         //===коллекции===
         private ObservableCollection<Person> _persons;
@@ -88,6 +89,9 @@ namespace IPtor.ViewModels
         public ICommand OpenPersonDetailCommand { get; }
         public ICommand SearchCommand { get; }
         public ICommand ClearSearchCommand { get; }
+        
+        //для работы эскей
+        public ICommand CloseCommand { get; }
 
         public PersonsViewModel(IPersonService personService)
         {
@@ -105,8 +109,9 @@ namespace IPtor.ViewModels
             OpenPersonDetailCommand = new RelayCommand(_ => OpenPersonDetail(), _ => SelectedPerson != null);
             SearchCommand = new RelayCommand(_ => SearchPersons());
             ClearSearchCommand = new RelayCommand(_ => ClearSearch());
+            //CloseCommand = new RelayCommand(_ => CloseAction?.Invoke());
 
-            _ = LoadPersonsAsync();
+            //_ = LoadPersonsAsync(); //убрал отсюда, потому что нет фабрики дбконтекст и конликтуют вызовы, все равно проходит только загрузка машин, да и нет смысла, они подгружаются при переходе на вкладку, с другими виями тоже самое
         }
 
         private void ClearSearch()
@@ -118,9 +123,17 @@ namespace IPtor.ViewModels
 
         private async Task LoadPersonsAsync()
         {
-            var persons = await _personService.GetAllPersonsAsync();
-            _allPersons = persons.ToList();
-            Persons = new ObservableCollection<Person>(persons);
+            try
+            {
+                var persons = await _personService.GetAllPersonsAsync();
+                _allPersons = persons.ToList();
+                Persons = new ObservableCollection<Person>(persons);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки данных.\n\n{ex.Message}",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private void SearchPersons()

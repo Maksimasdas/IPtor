@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 
 namespace IPtor.ViewModels
@@ -99,8 +100,16 @@ namespace IPtor.ViewModels
 
         private async Task LoadDataAsync()
         {
-            await LoadCarsAsync();
-            await LoadRequestsAsync();
+            try
+            {
+                await LoadCarsAsync();
+                await LoadRequestsAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки данных.\n\n{ex.Message}",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private async Task LoadCarsAsync()
@@ -108,8 +117,6 @@ namespace IPtor.ViewModels
             var cars = await _carService.GetAllCarsAsync();
             _allCarsList = cars.ToList();
             Cars = new ObservableCollection<Car>(_allCarsList);
-            //Cars = new ObservableCollection<Car>(cars);
-            //Cars = new ObservableCollection<Car>(_allCarsList);
         }
 
         private async Task LoadRequestsAsync()

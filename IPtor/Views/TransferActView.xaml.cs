@@ -14,6 +14,7 @@ namespace IPtor.Views
         {
             InitializeComponent();
             DataContext = viewModel;
+            viewModel.CloseAction = Close;
         }
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {

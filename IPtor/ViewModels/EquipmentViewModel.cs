@@ -137,15 +137,24 @@ namespace IPtor.ViewModels
             OpenEquipmentDetailCommand = new RelayCommand(_ => OpenEquipmentDetail(),
                 _ => SelectedEquipment != null);
 
-            _ = LoadEquipmentAsync();
+            //_ = LoadEquipmentAsync();
         }
 
         //методы
         private async Task LoadEquipmentAsync()
         {
-            var list = await _equipmentService.GetAllEquipmentAsync();
-            _allEquipment = list.ToList();
-            ApplyFilters();
+            try
+            {
+                var list = await _equipmentService.GetAllEquipmentAsync();
+                _allEquipment = list.ToList();
+                ApplyFilters();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки данных.\n\n{ex.Message}",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
         }
 
         private void ApplyFilters()

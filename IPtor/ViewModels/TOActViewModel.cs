@@ -189,6 +189,7 @@ namespace IPtor.ViewModels
 
         public ICommand GenerateCommand { get; }
         public ICommand AddPersonCommand { get; }
+        public ICommand CloseCommand { get; }
 
         public TOActViewModel(IPersonService personService, IReportService reportService, ICarService carService, Car car)
         {
@@ -201,6 +202,7 @@ namespace IPtor.ViewModels
 
             GenerateCommand = new RelayCommand(_ => GenerateAct());
             AddPersonCommand = new RelayCommand(_ => OpenAddPersonWindow());
+            CloseCommand = new RelayCommand(_ => CloseAction?.Invoke());
 
             //_ = LoadPersonsAsync();
         }

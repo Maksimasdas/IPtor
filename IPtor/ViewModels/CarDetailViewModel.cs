@@ -55,6 +55,9 @@ namespace IPtor.ViewModels
         public ICommand OpenDefectActCommand { get; }
         public ICommand OpenTOActCommand { get; }
 
+        //для работы эскей
+        public ICommand CloseCommand { get; }
+
         // Выбранные элементы
         private Battery _selectedBattery;
         public Battery SelectedBattery
@@ -113,6 +116,8 @@ namespace IPtor.ViewModels
 
             OpenDefectActCommand = new RelayCommand(_ => OpenDefectAct(), _ => SelectedDefect != null);
             OpenTOActCommand = new RelayCommand(_ => OpenTOAct(), _ => SelectedDefectTO != null);
+
+            CloseCommand = new RelayCommand(_ => CloseAction?.Invoke());
 
             _ = LoadCarAsync();
         }

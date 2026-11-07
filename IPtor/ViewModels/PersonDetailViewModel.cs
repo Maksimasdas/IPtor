@@ -25,6 +25,8 @@ namespace IPtor.ViewModels
         public ObservableCollection<string> ServiceTypes { get; }
         public ICommand SaveCommand { get; }
         public Action CloseAction { get; set; }
+
+        public ICommand CloseCommand { get; }
         public PersonDetailViewModel(IPersonService personService, int personId)
         {
             _personService = personService;
@@ -37,6 +39,8 @@ namespace IPtor.ViewModels
             }
 
             SaveCommand = new RelayCommand(async _ => await SaveAsync());
+
+            CloseCommand = new RelayCommand(_ => CloseAction?.Invoke());
 
             _ = LoadPersonAsync();
         }

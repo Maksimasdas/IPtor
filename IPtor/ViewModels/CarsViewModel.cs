@@ -159,6 +159,11 @@ namespace IPtor.ViewModels
                 _allCars = cars.ToList();
                 ApplyFilters();
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки данных.\n\n{ex.Message}",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
             finally
             {
                 IsLoading = false;
