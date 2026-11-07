@@ -46,6 +46,7 @@ namespace IPtor.ViewModels
                 personsViewModel.LoadPersonsCommand.Execute(null);
             });
             //для теста гитхаба 
+            // тест для гитхаба 2
             // Команда: переключиться на заявки
             ShowRepairRequestsCommand = new RelayCommand(_ =>
             {
