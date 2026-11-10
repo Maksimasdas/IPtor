@@ -19,6 +19,8 @@ namespace IPtor.ViewModels
         private readonly IPersonService _personService;
         private readonly IReportService _reportService;
         private readonly ICarService _carService;
+        private DefectsTO _existingDefectTO;
+
         private readonly Car _car;
 
         public string CarInfo { get; }
@@ -187,6 +189,8 @@ namespace IPtor.ViewModels
         private string _pred;
         public string Pred { get => _pred; set => Set(ref _pred, value); }
 
+        public bool IsEditMode { get; set; } = false; //добавил как и в актах на передачу, для блокировки повторного создания акта
+
         public ICommand GenerateCommand { get; }
         public ICommand AddPersonCommand { get; }
         public ICommand CloseCommand { get; }
@@ -205,6 +209,68 @@ namespace IPtor.ViewModels
             CloseCommand = new RelayCommand(_ => CloseAction?.Invoke());
 
             //_ = LoadPersonsAsync();
+        }
+
+        public void SetExistingDefect(DefectsTO defect)
+        {
+            _existingDefectTO = defect;
+        }
+
+        public void ApplyExistingDefect()
+        {
+            // Сотрудники (ищем по ID в загруженном списке Persons)
+            SheffPassService = Persons?.FirstOrDefault(p => p.PersonId == _existingDefectTO.SheffPassServiceId);
+            ResponcePerson = Persons?.FirstOrDefault(p => p.PersonId == _existingDefectTO.ResponcePersonId);
+            Driver = Persons?.FirstOrDefault(p => p.PersonId == _existingDefectTO.DriverId);
+
+            // Пробег и моточасы (конвертируем обратно в string, так как в VM они string)
+            KmSpeedometrStart = _existingDefectTO.KmSpeedometrStart.ToString();
+            MhSpeedStart = _existingDefectTO.MhSpeedStart.ToString();
+
+            // Тех. состояние
+            Body = _existingDefectTO.Body;
+            HeadBody = _existingDefectTO.HeadBody;
+            Engine = _existingDefectTO.Engine;
+            KPP = _existingDefectTO.KPP;
+            Rul = _existingDefectTO.Rul;
+            FrontGear = _existingDefectTO.FrontGear;
+            BackGear = _existingDefectTO.BackGear;
+            Electro = _existingDefectTO.Electro;
+            PTV = _existingDefectTO.PTV;
+            Water = _existingDefectTO.Water;
+            GeneralView = _existingDefectTO.GeneralView;
+            Spec = _existingDefectTO.Spec;
+            Break = _existingDefectTO.Break;
+            Other = _existingDefectTO.Other;
+
+            // Укомплектованность
+            PuskRuk = _existingDefectTO.PuskRuk;
+            Domkrat = _existingDefectTO.Domkrat;
+            Nasos = _existingDefectTO.Nasos;
+            SHpric = _existingDefectTO.SHpric;
+            Molotok = _existingDefectTO.Molotok;
+            Ploskogubci = _existingDefectTO.Ploskogubci;
+            Kluchi = _existingDefectTO.Kluchi;
+            Cluchi2 = _existingDefectTO.Cluchi2;
+            Cluchi3 = _existingDefectTO.Cluchi3;
+            Cluchi4 = _existingDefectTO.Cluchi4;
+            Chehli = _existingDefectTO.Chehli;
+            Aptechka = _existingDefectTO.Aptechka;
+            Znak = _existingDefectTO.Znak;
+            Disk = _existingDefectTO.Disk;
+            Ognetush = _existingDefectTO.Ognetush;
+            Radio = _existingDefectTO.Radio;
+            Protivougon = _existingDefectTO.Protivougon;
+            Gromkogov = _existingDefectTO.Gromkogov;
+            Protivotuman = _existingDefectTO.Protivotuman;
+            Mayak = _existingDefectTO.Mayak;
+            Fara = _existingDefectTO.Fara;
+            Prochee = _existingDefectTO.Prochee;
+
+            // Топливо и заключение
+            Fuel = _existingDefectTO.Fuel.ToString();
+            Zakl = _existingDefectTO.Zakl;
+            Pred = _existingDefectTO.Pred;
         }
 
         public async Task LoadPersonsAsync()
@@ -319,64 +385,66 @@ namespace IPtor.ViewModels
                 }
                 //для сохранения истории акта
 
-                var defectsTO = new DefectsTO
+                if (!IsEditMode)
                 {
-                    CarId = _car.CarId,
-                    ActDate = DateTime.Now,
+                    var defectsTO = new DefectsTO
+                    {
+                        CarId = _car.CarId,
+                        ActDate = DateTime.Now,
 
-                    // Сотрудники
-                    SheffPassServiceId = SheffPassService?.PersonId,
-                    ResponcePersonId = ResponcePerson?.PersonId,
-                    DriverId = Driver?.PersonId,
+                        // Сотрудники
+                        SheffPassServiceId = SheffPassService?.PersonId,
+                        ResponcePersonId = ResponcePerson?.PersonId,
+                        DriverId = Driver?.PersonId,
 
-                    // Пробег и моточасы
-                    KmSpeedometrStart = kmSpeedStart,
-                    MhSpeedStart = mhSpeedStart,
+                        // Пробег и моточасы
+                        KmSpeedometrStart = kmSpeedStart,
+                        MhSpeedStart = mhSpeedStart,
 
-                    //остальное
-                    Body = Body,
-                    HeadBody = HeadBody,
-                    Engine = Engine,
-                    KPP = KPP,
-                    Rul = Rul,
-                    FrontGear = FrontGear,
-                    BackGear = BackGear,
-                    Electro = Electro,
-                    PTV = PTV,
-                    Water = Water,
-                    GeneralView = GeneralView,
-                    Spec = Spec,
-                    Break = Break,
-                    Other = Other,
-                    PuskRuk = PuskRuk,
-                    Domkrat = Domkrat,
-                    Nasos = Nasos,
-                    SHpric = SHpric,
-                    Molotok = Molotok,
-                    Ploskogubci = Ploskogubci,
-                    Kluchi = Kluchi,
-                    Cluchi2 = Cluchi2,
-                    Cluchi3 = Cluchi3,
-                    Cluchi4 = Cluchi4,
-                    Chehli = Chehli,
-                    Aptechka = Aptechka,
-                    Znak = Znak,
-                    Disk = Disk,
-                    Ognetush = Ognetush,
-                    Radio = Radio,
-                    Protivougon = Protivougon,
-                    Gromkogov = Gromkogov,
-                    Protivotuman = Protivotuman,
-                    Mayak = Mayak,
-                    Fara = Fara,
-                    Prochee = Prochee,
-                    Fuel = fuel,
-                    Zakl = Zakl,
-                    Pred = Pred
-                };
+                        //остальное
+                        Body = Body,
+                        HeadBody = HeadBody,
+                        Engine = Engine,
+                        KPP = KPP,
+                        Rul = Rul,
+                        FrontGear = FrontGear,
+                        BackGear = BackGear,
+                        Electro = Electro,
+                        PTV = PTV,
+                        Water = Water,
+                        GeneralView = GeneralView,
+                        Spec = Spec,
+                        Break = Break,
+                        Other = Other,
+                        PuskRuk = PuskRuk,
+                        Domkrat = Domkrat,
+                        Nasos = Nasos,
+                        SHpric = SHpric,
+                        Molotok = Molotok,
+                        Ploskogubci = Ploskogubci,
+                        Kluchi = Kluchi,
+                        Cluchi2 = Cluchi2,
+                        Cluchi3 = Cluchi3,
+                        Cluchi4 = Cluchi4,
+                        Chehli = Chehli,
+                        Aptechka = Aptechka,
+                        Znak = Znak,
+                        Disk = Disk,
+                        Ognetush = Ognetush,
+                        Radio = Radio,
+                        Protivougon = Protivougon,
+                        Gromkogov = Gromkogov,
+                        Protivotuman = Protivotuman,
+                        Mayak = Mayak,
+                        Fara = Fara,
+                        Prochee = Prochee,
+                        Fuel = fuel,
+                        Zakl = Zakl,
+                        Pred = Pred
+                    };
 
-                await _carService.AddDefectsTOAsync(defectsTO);
-
+                    await _carService.AddDefectsTOAsync(defectsTO);
+                }
 
                 CloseAction?.Invoke();
             }

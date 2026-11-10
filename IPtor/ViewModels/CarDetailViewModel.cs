@@ -1,9 +1,11 @@
 ﻿using IPtor.Buisness.Interfaces;
 using IPtor.Buisness.Models;
+using IPtor.Buisness.Services;
 using IPtor.Commands;
 using IPtor.Domain.Entities;
 using IPtor.Domain.Enums;
 using IPtor.Helpers;
+using IPtor.Views;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -19,6 +21,7 @@ namespace IPtor.ViewModels
     public class CarDetailViewModel : ViewModelBase
     {
         private readonly ICarService _carService;
+        private readonly IPersonService _personService;
         private readonly IReportService _reportService;
         private readonly int _carId;
 
@@ -87,9 +90,10 @@ namespace IPtor.ViewModels
             set => Set(ref _selectedDefectTO, value);
         }
 
-        public CarDetailViewModel(ICarService carService, IReportService reportService, int carId)
+        public CarDetailViewModel(ICarService carService, IPersonService personService, IReportService reportService, int carId)
         {
             _carService = carService;
+            _personService = personService;
             _reportService = reportService;
             _carId = carId;
 
@@ -222,83 +226,114 @@ namespace IPtor.ViewModels
         }
 
         //методы для восстановления акта из истории
-        private void OpenDefectAct()
+        private async Task OpenDefectAct()
         {
             if (SelectedDefect == null || Car == null) return;
 
-            var data = new TransferActData
-            {
-                Car = Car,
-                TransferDate = SelectedDefect.ActDate,
-                SheffPassService = SelectedDefect.SheffPassService,
-                ResponcePerson = SelectedDefect.ResponcePerson,
-                Driver = SelectedDefect.Driver,
-                AcceptUtoPerson = SelectedDefect.AcceptUtoPerson,
-                AdditionalPerson = SelectedDefect.AdditionalPerson,
-                KmSpeedStart = SelectedDefect.KmSpeedStart,
-                MhSpeedStart = SelectedDefect.MhSpeedStart,
-                KmGeneral = SelectedDefect.KmSpeedStart + (int)(SelectedDefect.MhSpeedStart * 50),
+            //создаем вьюмодел для окна акта
+            var actVM = new TransferActViewModel(_carService, _personService, _reportService, Car);
 
-                // Вычисляемые значения (разница)
-                KmSpeedKarRepair = SelectedDefect.KmSpeedStart - SelectedDefect.KmSpeedKarRepair,
-                MhSpeedKapRepair = SelectedDefect.MhSpeedStart - SelectedDefect.MhSpeedKapRepair,
-                KmGeneralKapRepair = (SelectedDefect.KmSpeedStart - SelectedDefect.KmSpeedKarRepair)
-                       + (int)((SelectedDefect.MhSpeedStart - SelectedDefect.MhSpeedKapRepair) * 50),
+            //передаем ей существующий акт
+            actVM.SetExistingDefect(SelectedDefect);
 
-                KmSpeedTO = SelectedDefect.KmSpeedStart - SelectedDefect.KmSpeedTO,
-                MhSpeedTO = SelectedDefect.MhSpeedStart - SelectedDefect.MhSpeedTO,
-                KmGeneralTO = (SelectedDefect.KmSpeedStart - SelectedDefect.KmSpeedTO)
-                + (int)((SelectedDefect.MhSpeedStart - SelectedDefect.MhSpeedTO) * 50),
+            //загружаем список сотрудников
+            await actVM.LoadPersonsAsync();
 
-                AvarageRepair = SelectedDefect.AvarageRepair,
-                KapRepair = SelectedDefect.KapRepair,
+            //применяем данные из сущ. акта
+            actVM.ApplyExistingDefect();
 
-                Defects = SelectedDefect
+            // Включаем режим редактирования (чтобы не создавать дубль в БД)
+            actVM.IsEditMode = true;
 
-            };
-            var saveDialog = new SaveFileDialog
-            {
-                Filter = "Excel files (*.xlsx)|*.xlsx",
-                DefaultExt = "xlsx",
-                FileName = $"Акт_передачи_{Car.Number.Replace("/", "_")}_{DateTime.Now:yyyyMMdd_HHmm}"
-            };
+            // 6. Открываем окно
+            var window = new TransferActView(actVM);
+            window.ShowDialog();
+
+            //var data = new TransferActData
+            //{
+            //    Car = Car,
+            //    TransferDate = SelectedDefect.ActDate,
+            //    SheffPassService = SelectedDefect.SheffPassService,
+            //    ResponcePerson = SelectedDefect.ResponcePerson,
+            //    Driver = SelectedDefect.Driver,
+            //    AcceptUtoPerson = SelectedDefect.AcceptUtoPerson,
+            //    AdditionalPerson = SelectedDefect.AdditionalPerson,
+            //    KmSpeedStart = SelectedDefect.KmSpeedStart,
+            //    MhSpeedStart = SelectedDefect.MhSpeedStart,
+            //    KmGeneral = SelectedDefect.KmSpeedStart + (int)(SelectedDefect.MhSpeedStart * 50),
+
+            //    // Вычисляемые значения (разница)
+            //    KmSpeedKarRepair = SelectedDefect.KmSpeedStart - SelectedDefect.KmSpeedKarRepair,
+            //    MhSpeedKapRepair = SelectedDefect.MhSpeedStart - SelectedDefect.MhSpeedKapRepair,
+            //    KmGeneralKapRepair = (SelectedDefect.KmSpeedStart - SelectedDefect.KmSpeedKarRepair)
+            //           + (int)((SelectedDefect.MhSpeedStart - SelectedDefect.MhSpeedKapRepair) * 50),
+
+            //    KmSpeedTO = SelectedDefect.KmSpeedStart - SelectedDefect.KmSpeedTO,
+            //    MhSpeedTO = SelectedDefect.MhSpeedStart - SelectedDefect.MhSpeedTO,
+            //    KmGeneralTO = (SelectedDefect.KmSpeedStart - SelectedDefect.KmSpeedTO)
+            //    + (int)((SelectedDefect.MhSpeedStart - SelectedDefect.MhSpeedTO) * 50),
+
+            //    AvarageRepair = SelectedDefect.AvarageRepair,
+            //    KapRepair = SelectedDefect.KapRepair,
+
+            //    Defects = SelectedDefect
+
+            //};
+            //var saveDialog = new SaveFileDialog
+            //{
+            //    Filter = "Excel files (*.xlsx)|*.xlsx",
+            //    DefaultExt = "xlsx",
+            //    FileName = $"Акт_передачи_{Car.Number.Replace("/", "_")}_{DateTime.Now:yyyyMMdd_HHmm}"
+            //};
             
-            if (saveDialog.ShowDialog() == true)
-            {
-                var templatePath = Path.Combine(AppContext.BaseDirectory, "Templates", "Акт_передачи_шаблон.xlsx");
-                _reportService.GenerateTransferAct(data, templatePath, saveDialog.FileName);
-                FileHelper.OpenFile(saveDialog.FileName);
-            }
+            //if (saveDialog.ShowDialog() == true)
+            //{
+            //    var templatePath = Path.Combine(AppContext.BaseDirectory, "Templates", "Акт_передачи_шаблон.xlsx");
+            //    _reportService.GenerateTransferAct(data, templatePath, saveDialog.FileName);
+            //    FileHelper.OpenFile(saveDialog.FileName);
+            //}
         }
 
-        private void OpenTOAct()
+        private async Task OpenTOAct()
         {
             if (SelectedDefectTO == null || Car == null) return;
 
-            var data = new TOAktData
-            {
-                Car = Car,
-                TransferDate = SelectedDefectTO.ActDate,
-                SheffPassService = SelectedDefectTO.SheffPassService,
-                ResponcePerson = SelectedDefectTO.ResponcePerson,
-                Driver = SelectedDefectTO.Driver,
-                KmSpeedometrStart = SelectedDefectTO.KmSpeedometrStart,
-                MhSpeedStart = SelectedDefectTO.MhSpeedStart,
-                DefectsTO = SelectedDefectTO
-            };
-            var saveDialog = new SaveFileDialog
-            {
-                Filter = "Excel files (*.xlsx)|*.xlsx",
-                DefaultExt = "xlsx",
-                FileName = $"Акт_ТО_{Car.Number.Replace("/", "_")}_{DateTime.Now:yyyyMMdd_HHmm}"
-            };
+            var ActVM = new TOActViewModel(_personService, _reportService, _carService, Car);
+            ActVM.SetExistingDefect(SelectedDefectTO);
 
-            if (saveDialog.ShowDialog() == true)
-            {
-                var templatePath = Path.Combine(AppContext.BaseDirectory, "Templates", "Акт_передачи_шаблон2.xlsx");
-                _reportService.GenerateTOAct(data, templatePath, saveDialog.FileName);
-                FileHelper.OpenFile(saveDialog.FileName);
-            }
+            await ActVM.LoadPersonsAsync();
+            ActVM.ApplyExistingDefect();
+
+            ActVM.IsEditMode = true;
+
+            var window = new TOActView(ActVM);
+            window.ShowDialog();
+            //if (SelectedDefectTO == null || Car == null) return;
+
+            //var data = new TOAktData
+            //{
+            //    Car = Car,
+            //    TransferDate = SelectedDefectTO.ActDate,
+            //    SheffPassService = SelectedDefectTO.SheffPassService,
+            //    ResponcePerson = SelectedDefectTO.ResponcePerson,
+            //    Driver = SelectedDefectTO.Driver,
+            //    KmSpeedometrStart = SelectedDefectTO.KmSpeedometrStart,
+            //    MhSpeedStart = SelectedDefectTO.MhSpeedStart,
+            //    DefectsTO = SelectedDefectTO
+            //};
+            //var saveDialog = new SaveFileDialog
+            //{
+            //    Filter = "Excel files (*.xlsx)|*.xlsx",
+            //    DefaultExt = "xlsx",
+            //    FileName = $"Акт_ТО_{Car.Number.Replace("/", "_")}_{DateTime.Now:yyyyMMdd_HHmm}"
+            //};
+
+            //if (saveDialog.ShowDialog() == true)
+            //{
+            //    var templatePath = Path.Combine(AppContext.BaseDirectory, "Templates", "Акт_передачи_шаблон2.xlsx");
+            //    _reportService.GenerateTOAct(data, templatePath, saveDialog.FileName);
+            //    FileHelper.OpenFile(saveDialog.FileName);
+            //}
         }
     }
 }

@@ -224,7 +224,7 @@ namespace IPtor.ViewModels
         {
             if (SelectedCar == null) return;
 
-            var detailVM = new CarDetailViewModel(_carService, _reportService, SelectedCar.CarId);
+            var detailVM = new CarDetailViewModel(_carService, _personService, _reportService, SelectedCar.CarId);
             var window = new CarDetailView(detailVM);
             window.ShowDialog();
 
