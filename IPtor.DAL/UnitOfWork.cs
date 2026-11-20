@@ -1,12 +1,16 @@
 ﻿using IPtor.DAL.Interfaces;
 using IPtor.DAL.Repositories;
 using IPtor.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using System.Threading;
 
 namespace IPtor.DAL
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly AppDbContext _context;
+        private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        private readonly IDbContextFactory<AppDbContext> _contextFactory;
+        private AppDbContext _context;
 
         private ICarRepository _cars;
         private IRepository<Battery> _batteries;
@@ -14,40 +18,37 @@ namespace IPtor.DAL
         private IRepository<Defects> _defects;
         private IRepository<DefectsTO> _defectsTOs;
         private IRepository<Person> _persons;
-        //private IPersonRepository _persons;
         private IRepository<RepairRequest> _repairRequests;
-        //private IRepository<Equipment> _equipment;
         private IEquipmentRepository _equipment;
-        public UnitOfWork(AppDbContext context)
+
+        public UnitOfWork(IDbContextFactory<AppDbContext> contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory;
         }
 
-        public ICarRepository Cars => _cars ??= new CarRepository(_context);
+        private AppDbContext Context => _context ??= _contextFactory.CreateDbContext();
 
-        public IRepository<Battery> Batteries => _batteries ??= new EntityRepository<Battery>(_context);
+        public ICarRepository Cars => _cars ??= new CarRepository(Context);
+        public IRepository<Battery> Batteries => _batteries ??= new EntityRepository<Battery>(Context);
+        public IRepository<Tire> Tires => _tires ??= new EntityRepository<Tire>(Context);
+        public IRepository<Defects> Defects => _defects ??= new EntityRepository<Defects>(Context);
+        public IRepository<DefectsTO> DefectsTOs => _defectsTOs ??= new EntityRepository<DefectsTO>(Context);
+        public IRepository<Person> Persons => _persons ??= new EntityRepository<Person>(Context);
+        public IRepository<RepairRequest> RepairRequests => _repairRequests ??= new EntityRepository<RepairRequest>(Context);
+        public IEquipmentRepository Equipment => _equipment ??= new EquipmentRepository(Context);
 
-        public IRepository<Tire> Tires => _tires ??= new EntityRepository<Tire>(_context);
-
-        public IRepository<Defects> Defects => _defects ??= new EntityRepository<Defects>(_context);
-
-        public IRepository<DefectsTO> DefectsTOs => _defectsTOs ??= new EntityRepository<DefectsTO>(_context);
-
-        public IRepository<Person> Persons => _persons ??= new EntityRepository<Person>(_context);
-        //public IPersonRepository Persons => _persons ??= new PersonRepository(_context);
-        public IRepository<RepairRequest> RepairRequests => _repairRequests ??= new EntityRepository<RepairRequest>(_context);
-
-        //public IRepository<Equipment> Equipment => _equipment ??= new EntityRepository<Equipment>(_context);
-        public IEquipmentRepository Equipment => _equipment ??= new EquipmentRepository(_context);
-
-        public void Dispose()
-        {
-            _context.Dispose();
-        }
+        public async Task WaitAsync() => await _semaphore.WaitAsync();
+        public void Release() => _semaphore.Release();
 
         public async Task<int> SaveChangesAsync()
         {
             return await _context.SaveChangesAsync();
+        }
+
+        public void Dispose()
+        {
+            _context?.Dispose();
+            _context = null;
         }
     }
 }

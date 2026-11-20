@@ -14,6 +14,9 @@ namespace IPtor.DAL.Interfaces
         IRepository<RepairRequest> RepairRequests { get; }
         //IRepository<Equipment> Equipment { get; }
         IEquipmentRepository Equipment { get; }
+        Task WaitAsync();  // семафор
+        void Release();    // семафор
+
 
         Task<int> SaveChangesAsync();
     }

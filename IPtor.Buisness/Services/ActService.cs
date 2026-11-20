@@ -1,4 +1,5 @@
-﻿using IPtor.Buisness.Interfaces;
+﻿using IPtor.Buisness.Helpers;
+using IPtor.Buisness.Interfaces;
 using IPtor.Buisness.Models;
 using IPtor.DAL.Interfaces;
 using System;
@@ -17,27 +18,30 @@ namespace IPtor.Buisness.Services
         }
         public async Task<TOAktData> BuildTOAktDataAsync(int carId)
         {
-            var car = await _uow.Cars.GetCarWithFullInfoAsync(carId);
-            if (car == null)
-                return null;
-            return new TOAktData
+            return await _uow.ExecuteWithLockAsync(async () =>
             {
-                Car = car,
-                // Остальные поля заполнит пользователь в UI
-            };
+                var car = await _uow.Cars.GetCarWithFullInfoAsync(carId);
+                if (car == null) return null;
+
+                return new TOAktData
+                {
+                    Car = car,
+                };
+            });
         }
 
         public async Task<TransferActData> BuildTransferActDataAsync(int carId)
         {
-            // Загружаем машину со всеми данными
-            var car = await _uow.Cars.GetCarWithFullInfoAsync(carId);
-            if (car == null)
-                return null;
-            return new TransferActData
+            return await _uow.ExecuteWithLockAsync(async () =>
             {
-                Car = car
-                // Остальные поля (SheffPassService, Driver, пробег и т.д будут заполнены пользователем в UI
-            };
+                var car = await _uow.Cars.GetCarWithFullInfoAsync(carId);
+                if (car == null) return null;
+
+                return new TransferActData
+                {
+                    Car = car
+                };
+            });
         }
     }
 }

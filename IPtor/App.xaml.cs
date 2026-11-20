@@ -38,8 +38,8 @@ namespace IPtor
             //AddTransient - это регистрация моделей без интерфейсов - по самому классу
             //Transient означает каждый раз новый, каждый когда запрашивают CarsViewModel и т.д. — создаётся новый экземпляр.
             // ===== БАЗА ДАННЫХ =====
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(connectionString));
+            services.AddDbContextFactory<AppDbContext>(options =>
+                options.UseSqlServer(connectionString)); 
 
             // ===== DAL =====
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -148,17 +148,14 @@ namespace IPtor
             // 2. Тяжёлая работа — в фоне
             await Task.Run(() =>
             {
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                var factory = _serviceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>();
+                using var context = factory.CreateDbContext();
 
-                    //обновляем текст через диспетчер из фонового потока
-                    splash.Dispatcher.Invoke(() => splash.UpdateStatus("Подключение к базе данных..."));
-                    context.Database.Migrate();
+                splash.Dispatcher.Invoke(() => splash.UpdateStatus("Подключение к базе данных..."));
+                context.Database.Migrate();
 
-                    splash.Dispatcher.Invoke(() => splash.UpdateStatus("Проверка данных..."));
-                    SeedData(context);
-                }
+                splash.Dispatcher.Invoke(() => splash.UpdateStatus("Проверка данных..."));
+                SeedData(context);
             });
 
             // 3. Создаём главное окно (тоже в фоне)

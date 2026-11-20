@@ -37,5 +37,13 @@
                        Margin="0,15,0,0"
                        HorizontalAlignment="Center"/>
         </StackPanel>
+        <TextBlock Text="v1.2.1"
+               HorizontalAlignment="Right"
+               VerticalAlignment="Bottom"
+               Margin="0,0,10,6"
+               FontSize="11"
+               Foreground="Gray"
+               Opacity="0.7"
+               IsHitTestVisible="False"/>
     </Grid>
 </Window>
