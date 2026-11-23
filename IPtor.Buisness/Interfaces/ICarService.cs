@@ -26,5 +26,8 @@ namespace IPtor.Buisness.Interfaces
 
         //добалвено после ПЗ для отображения машин в ремонте
         Task SetRepairStatusAsync(int carId, bool isUnderRepair, string? reason); // доабвление машин в список "в ремонте"
+
+        //для того, что бы можно было удалять шины и акб только явно указав
+        Task SaveCarDetailsAsync(Car car, IEnumerable<int> deletedBatteryIds, IEnumerable<int> deletedTireIds);
     }
 }

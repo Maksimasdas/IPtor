@@ -209,5 +209,46 @@ namespace IPtor.Buisness.Services
                 }
             });
         }
+
+        public async Task SaveCarDetailsAsync(Car car, IEnumerable<int> deletedBatteryIds, IEnumerable<int> deletedTireIds)
+        {
+            await _uow.ExecuteWithLockAsync(async () =>
+            {
+                // 1. Обновляем машину
+                var existingCar = await _uow.Cars.GetByIdAsync(car.CarId);
+                if (existingCar != null)
+                {
+                    existingCar.Name = car.Name;
+                    existingCar.Model = car.Model;
+                    existingCar.Number = car.Number;
+                    existingCar.ClassName = car.ClassName;
+                    existingCar.Service = car.Service;
+                    existingCar.Vin = car.Vin;
+                    existingCar.Certificate = car.Certificate;
+                    existingCar.EngineNumber = car.EngineNumber;
+                    existingCar.Formular = car.Formular;
+                    existingCar.FormularDate = car.FormularDate;
+                    existingCar.Year = car.Year;
+                    existingCar.InventoryNumber = car.InventoryNumber;
+                }
+
+                // 2. Удаляем помеченные батареи
+                foreach (var id in deletedBatteryIds)
+                {
+                    var battery = await _uow.Batteries.GetByIdAsync(id);
+                    if (battery != null) _uow.Batteries.Delete(battery);
+                }
+
+                // 3. Удаляем помеченные шины
+                foreach (var id in deletedTireIds)
+                {
+                    var tire = await _uow.Tires.GetByIdAsync(id);
+                    if (tire != null) _uow.Tires.Delete(tire);
+                }
+
+                // 4. Сохраняем всё в БД
+                await _uow.SaveChangesAsync();
+            });
+        }
     }
 }

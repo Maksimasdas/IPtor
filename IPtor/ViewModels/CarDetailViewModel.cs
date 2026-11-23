@@ -13,6 +13,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -24,6 +25,8 @@ namespace IPtor.ViewModels
         private readonly IPersonService _personService;
         private readonly IReportService _reportService;
         private readonly int _carId;
+        private List<int> _deletedBatteryIds = new List<int>();
+        private List<int> _deletedTireIds = new List<int>();
 
         public Action CloseAction { get; set; } //для закрытия окна после добавлнеия машины
 
@@ -146,36 +149,40 @@ namespace IPtor.ViewModels
 
         private async Task SaveAsync()
         {
-            if (Car == null) return; 
+            if (Car == null) return;
 
-            // Обновляем машину
-            await _carService.UpdateCarAsync(Car);
-
-            // Добавляем новые батареи и шины
-            foreach (var battery in Batteries)
+            try
             {
-                if (battery.BatteryId == 0)  // Новая запись
-                    await _carService.AddBatteryAsync(battery);
-                else
-                    await _carService.UpdateBatteryAsync(battery); //если не новая, то обновляем
-            }
+                // 1. Сохраняем машину и применяем удаления (в одном запросе)
+                await _carService.SaveCarDetailsAsync(Car, _deletedBatteryIds, _deletedTireIds);
 
-            foreach (var tire in Tires)
+                // 2. Добавляем/обновляем оставшиеся батареи
+                foreach (var battery in Batteries)
+                {
+                    if (battery.BatteryId == 0)
+                        await _carService.AddBatteryAsync(battery);
+                    else
+                        await _carService.UpdateBatteryAsync(battery);
+                }
+
+                // 3. Добавляем/обновляем оставшиеся шины
+                foreach (var tire in Tires)
+                {
+                    if (tire.TireId == 0)
+                        await _carService.AddTireAsync(tire);
+                    else
+                        await _carService.UpdateTireAsync(tire);
+                }
+
+                MessageBox.Show("Изменения сохранены!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                CloseAction?.Invoke();
+            }
+            catch (Exception ex)
             {
-                if (tire.TireId == 0)  // Новая запись
-                    await _carService.AddTireAsync(tire);
-                else
-                    await _carService.UpdateTireAsync(tire); //если не новая, то обновляем
+                MessageBox.Show($"Ошибка сохранения: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-            System.Windows.MessageBox.Show("Изменения сохранены!", "Успех",
-                System.Windows.MessageBoxButton.OK,
-                System.Windows.MessageBoxImage.Information);
-
-
-
-            CloseAction?.Invoke();  // ← Закрыть окно
         }
+
         private void AddBattery()
         {
             var battery = new Battery
@@ -190,12 +197,13 @@ namespace IPtor.ViewModels
             Batteries.Add(battery);
         }
 
-        private async void DeleteBattery()
+        private void DeleteBattery()
         {
             if (SelectedBattery == null) return;
 
+            // Если это не новая батарея (у неё есть ID), запоминаем её
             if (SelectedBattery.BatteryId != 0)
-                await _carService.DeleteBatteryAsync(SelectedBattery.BatteryId);
+                _deletedBatteryIds.Add(SelectedBattery.BatteryId);
 
             Batteries.Remove(SelectedBattery);
         }
@@ -215,12 +223,12 @@ namespace IPtor.ViewModels
             Tires.Add(tire);
         }
 
-        private async void DeleteTire()
+        private void DeleteTire()
         {
             if (SelectedTire == null) return;
 
             if (SelectedTire.TireId != 0)
-                await _carService.DeleteTireAsync(SelectedTire.TireId);
+                _deletedTireIds.Add(SelectedTire.TireId);
 
             Tires.Remove(SelectedTire);
         }
